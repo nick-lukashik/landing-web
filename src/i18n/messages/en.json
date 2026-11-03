@@ -1,0 +1,78 @@
+{
+    "meta": {
+        "siteName": "Nick Lukashik",
+        "languageName": "English",
+        "description": "Senior full-stack engineer. Web products built turnkey: interface design, frontend, backend, payments, infrastructure and monitoring, from the idea to launch and support.",
+        "ogAlt": "Nick Lukashik — Senior full-stack engineer",
+        "ogTitle": "Senior full-stack engineer",
+        "ogTagline": "Design · Frontend · Backend · Payments · Infrastructure"
+    },
+    "nav": {
+        "skip": "Skip to content",
+        "label": "Main",
+        "home": "Home",
+        "language": "Language"
+    },
+    "footer": {
+        "role": "Senior full-stack engineer",
+        "version": "Version {version}",
+        "links": "Contacts"
+    },
+    "home": {
+        "meta": {
+            "title": "Nick Lukashik — Senior full-stack engineer",
+            "description": "Senior full-stack engineer. Web products built turnkey: interface design, frontend, backend, payments, infrastructure and monitoring, from the idea to launch and support."
+        },
+        "role": "Senior full-stack engineer",
+        "heading": "I’ll build the whole thing.",
+        "lead": "From first idea to live product: design, code, payments and launch.",
+        "cta": "Discuss a project",
+        "process": {
+            "title": "Clear steps, visible progress.",
+            "intro": "Every stage ends with something you can open and check, not a status report.",
+            "steps": {
+                "discovery": {
+                    "title": "Discovery",
+                    "body": "Goals, users, constraints and the smallest version worth launching."
+                },
+                "design": {
+                    "title": "Design",
+                    "body": "Key flows and screens first, then the architecture and the data model."
+                },
+                "build": {
+                    "title": "Build",
+                    "body": "Short iterations: frontend, backend, payments, integrations and tests together."
+                },
+                "launch": {
+                    "title": "Launch",
+                    "body": "Production setup (domain, CI/CD, monitoring, alerts and backups), then the release."
+                },
+                "support": {
+                    "title": "Support",
+                    "body": "Fixes, improvements and new features, with an eye on metrics and alerts."
+                }
+            }
+        },
+        "contact": {
+            "title": "Good things start with a conversation.",
+            "description": "Tell me what you want to build or fix: a few lines are enough. Open to projects, long-term contracts and ambitious teams.",
+            "reply": "I usually reply within a day.",
+            "telegram": "Telegram",
+            "linkedin": "LinkedIn",
+            "github": "GitHub",
+            "opensInNewTab": "opens in a new tab"
+        }
+    },
+    "error": {
+        "title": "Something went wrong",
+        "body": "The page could not be shown. Try again; if it keeps failing, come back a little later.",
+        "retry": "Try again",
+        "home": "Go to the home page",
+        "digest": "Error ID: {digest}"
+    },
+    "notFound": {
+        "title": "Page not found",
+        "body": "There is no page at this address. It may have moved or never existed.",
+        "home": "Go to the home page"
+    }
+}
