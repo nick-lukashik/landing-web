@@ -4,7 +4,7 @@ import { resolveLocale } from '@/i18n/resolve'
 import { REQUEST_ID_HEADER, requestIdFrom } from '@/lib/request-id'
 import { buildCsp, createNonce, NONCE_HEADER } from '@/lib/security/csp'
 import { CANONICAL_HEADER, canonicalPath, PATHNAME_HEADER } from '@/lib/seo/alternates'
-import { HINT_COOKIE, isPageVisit, SILENT_COOKIE, SILENT_SECONDS, wantsSilentSignIn } from '@/lib/sso/silent'
+import { HINT_COOKIE, isPageVisit, SILENT_COOKIE, wantsSilentSignIn } from '@/lib/sso/silent'
 import {
     cookieNames,
     cookieOptions,
@@ -49,6 +49,12 @@ export async function proxy(request: NextRequest) {
             nonce,
             dev: process.env.NODE_ENV === 'development',
             https,
+            // "Sign out" goes on to the account site, which ends its session too.
+            formActions: sso
+                ? [
+                      new URL(sso.idUrl).origin,
+                  ]
+                : [],
         })
         // Next.js reads the nonce from the request's CSP and puts it on its scripts.
         forwarded.set('content-security-policy', csp)
@@ -89,38 +95,30 @@ type AccountStep = {
 /**
  * This site's session before the page renders: refreshed when its access
  * token is about to expire (the new cookie goes to the page and the browser),
- * dropped when id-api refuses it, and ended when it came from silent sign-in
- * and the hint of id-web is gone (signed out there, on a shared computer).
+ * dropped when id-api refuses it, and ended when the hint of id-web is gone
+ * (signed out there or on any site: sign-out is for the whole account).
  * Without a session, a hinted page visit goes through silent sign-in.
  */
 async function keepAccount(request: NextRequest): Promise<AccountStep | undefined> {
     if (!sso) return undefined
     const name = cookieNames().session
-    const mark = request.cookies.get(SILENT_COOKIE)?.value
     const hinted = request.cookies.has(HINT_COOKIE)
     const sealed = request.cookies.get(name)?.value
     let session = sealed ? openSession(sso, sealed) : undefined
     const writes: ((response: NextResponse) => void)[] = []
-    const drop = (markOut: boolean) => {
+    const drop = () => {
         request.cookies.delete(name)
         session = undefined
-        writes.push(response => {
-            response.cookies.delete(name)
-            if (markOut)
-                response.cookies.set(SILENT_COOKIE, 'out', {
-                    ...cookieOptions(SILENT_SECONDS.out),
-                })
-            else if (mark === 'silent') response.cookies.delete(SILENT_COOKIE)
-        })
+        writes.push(response => response.cookies.delete(name))
     }
 
-    if (sealed && !session) drop(false)
-    else if (session && mark === 'silent' && !hinted) {
+    if (sealed && !session) drop()
+    else if (session && !hinted) {
         await endSession(sso, session)
-        drop(false)
+        drop()
     } else if (session && session.accessExpiresAt - Date.now() < REFRESH_BEFORE_MS) {
         const refreshed = await refreshSession(sso, session)
-        if (refreshed === 'ended') drop(true)
+        if (refreshed === 'ended') drop()
         else if (refreshed !== 'unavailable') {
             const value = sealSession(sso, refreshed)
             request.cookies.set(name, value)

@@ -1,15 +1,15 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { serverEnv } from '@/lib/env/server'
-import { markSilent, off, to } from '@/lib/sso/respond'
+import { off } from '@/lib/sso/respond'
 import { cookieNames, endSession, openSession, sso } from '@/lib/sso/sso'
 
 export const dynamic = 'force-dynamic'
 
 /**
- * Sign-out is a POST from the header's form: the session ends at id-api, the
- * cookie goes (even when id-api does not answer). `out` keeps the session at
- * id-web from signing the person back in silently; signing in here again
- * lifts it. id-web's own session stays: sign out there to leave everything.
+ * "Sign out" (a POST from the header's form) signs out of the whole account
+ * in this browser: this site's session ends at id-api and its cookie goes,
+ * then the browser goes to id-web's /logout, which ends the session there
+ * and every site's session signed in from it, and comes back to the main page.
  */
 export async function POST(request: NextRequest) {
     if (!sso) return off()
@@ -20,8 +20,10 @@ export async function POST(request: NextRequest) {
         })
     const name = cookieNames().session
     await endSession(sso, openSession(sso, request.cookies.get(name)?.value))
-    const response = to('/')
+    const target = new URL('/logout', sso.idUrl)
+    target.searchParams.set('return', `${serverEnv.SITE_URL}/`)
+    const response = NextResponse.redirect(target, 303)
+    response.headers.set('cache-control', 'private, no-store')
     response.cookies.delete(name)
-    markSilent(response, 'out')
     return response
 }

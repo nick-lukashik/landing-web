@@ -75,25 +75,13 @@ describe('wantsSilentSignIn', () => {
 
     it('starts for a hinted visitor without a session here', () => {
         expect(wantsSilentSignIn(visit)).toBe(true)
-        expect(
-            wantsSilentSignIn({
-                ...visit,
-                mark: 'silent',
-            }),
-        ).toBe(true)
     })
 
-    it('waits after an attempt or a sign-out, and never on the sign-in routes', () => {
+    it('waits after an attempt, and never on the sign-in routes', () => {
         expect(
             wantsSilentSignIn({
                 ...visit,
                 mark: 'tried',
-            }),
-        ).toBe(false)
-        expect(
-            wantsSilentSignIn({
-                ...visit,
-                mark: 'out',
             }),
         ).toBe(false)
         expect(

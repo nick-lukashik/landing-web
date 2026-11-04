@@ -10,26 +10,19 @@
 export const HINT_COOKIE = 'nl_hint'
 
 /**
- * What this site remembers about silent sign-in in this browser:
- * - `tried`: an attempt was made; none again for a while (no loops);
- * - `out`: the person signed out here, or id-api refused this site's
- *   session: never undone silently, only by signing in here;
- * - `silent`: this site's session came from silent sign-in, so it ends
- *   with the session at id-web (the hint going away).
+ * After a silent attempt this site waits before the next one (`tried`), so a
+ * visitor is never sent round in a loop. Sign-out needs no mark: it is global
+ * (the account site drops the hint), and a session of this site ends as soon
+ * as the hint is gone.
  */
 export const SILENT_COOKIE = 'site_silent'
-export type SilentMark = 'tried' | 'out' | 'silent'
-export const SILENT_SECONDS: Record<SilentMark, number> = {
-    tried: 300,
-    out: 365 * 86_400,
-    silent: 365 * 86_400,
-}
+export const SILENT_TRIED_SECONDS = 300
 /** The wait after an attempt that would only fail the same way again (a refused request or code). */
 export const SILENT_FAILED_SECONDS = 86_400
 
-/** Whether silent sign-in waits: after an attempt or a sign-out, and for any value it does not know. */
+/** Whether silent sign-in waits: after an attempt, and for any value it does not know. */
 export function silentWaits(mark: string | undefined) {
-    return mark !== undefined && mark !== 'silent'
+    return mark !== undefined
 }
 
 /** Crawlers and link unfurlers are never sent anywhere, whatever they carry. */

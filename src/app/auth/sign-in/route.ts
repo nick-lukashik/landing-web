@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { markSilent, off, to } from '@/lib/sso/respond'
+import { markTried, off, to } from '@/lib/sso/respond'
 import { HINT_COOKIE, SILENT_COOKIE, safeReturnTo, silentWaits } from '@/lib/sso/silent'
 import { beginSignIn, cookieNames, cookieOptions, openSession, PENDING_MAX_AGE, sso } from '@/lib/sso/sso'
 
@@ -33,6 +33,6 @@ export function GET(request: NextRequest) {
     const response = NextResponse.redirect(url, 303)
     response.headers.set('cache-control', 'private, no-store')
     response.cookies.set(cookieNames().pending, cookie, cookieOptions(PENDING_MAX_AGE))
-    if (silent) markSilent(response, 'tried')
+    if (silent) markTried(response)
     return response
 }
