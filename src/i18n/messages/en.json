@@ -120,6 +120,7 @@
                     "locale: your language, kept for one year.",
                     "__Host-id_session at id.nick-lukashik.com and __Host-site_session at nick-lukashik.com: your session, encrypted. They are HttpOnly, so scripts cannot read them, and live for thirty days.",
                     "__Host-id_login, __Host-id_google and __Host-site_sso: a sign-in in progress. They live for ten minutes and are deleted when sign-in is complete.",
+                    "__Host-id_passkey at id.nick-lukashik.com: the name of the passkey last used in this browser (such as “Chrome on macOS”), encrypted, so the sign-in page can offer it straight away. Kept for one year, also after you sign out, and deleted along with that passkey.",
                     "nl_hint: a note that this browser is signed in at id.nick-lukashik.com, set for the whole nick-lukashik.com domain, so this site can let you in without signing in again. It holds no personal data, just “1”, and goes away when you sign out there.",
                     "site_silent: this site’s note about automatic sign-in, just “tried”: kept for five minutes after an attempt (a day if it failed in a way that would repeat), so the site does not try again on every page. It is deleted when you sign in.",
                     "Cloudflare, which delivers the sites, may set its own security cookies such as __cf_bm to tell people from bots.",
