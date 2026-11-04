@@ -9,14 +9,14 @@ import { type AppLocale, defaultLocale, isLocale, locales } from '@/i18n/config'
 import { contacts } from '@/lib/contacts'
 import { serverEnv } from '@/lib/env/server'
 import { NONCE_HEADER } from '@/lib/security/csp'
-import { languageAlternates, localizedPath, PATHNAME_HEADER } from '@/lib/seo/alternates'
+import { CANONICAL_HEADER, languageAlternates, localizedPath, PATHNAME_HEADER } from '@/lib/seo/alternates'
 import { baseOpenGraph } from '@/lib/seo/metadata'
 import './globals.css'
 
 /**
  * Site-wide metadata. Pages set only their title and description; the
  * canonical URL, hreflang alternates and og:url come from the request path
- * (x-pathname, set by the proxy), og/twitter title and description are
+ * (x-pathname and x-canonical-path, set by the proxy), og/twitter title and description are
  * filled in by Next.js from the page's own.
  */
 export async function generateMetadata(): Promise<Metadata> {
@@ -37,7 +37,7 @@ export async function generateMetadata(): Promise<Metadata> {
         description: t('description'),
         applicationName: t('siteName'),
         alternates: {
-            canonical: localizedPath(path, lang),
+            canonical: requestHeaders.get(CANONICAL_HEADER) ?? localizedPath(path, lang),
             languages: languageAlternates(path),
         },
         openGraph: {
