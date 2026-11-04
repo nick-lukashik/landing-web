@@ -1,8 +1,9 @@
 import { type MetadataRoute } from 'next'
 
-/** Never crawled: the API proxy, probes and Next.js internals. */
+/** Never crawled: the API proxy, probes, sign-in and Next.js internals. */
 const PRIVATE_PATHS = [
     '/api/',
+    '/auth/',
     '/health/',
 ]
 

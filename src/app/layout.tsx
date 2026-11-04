@@ -1,5 +1,5 @@
 import { type Metadata, type Viewport } from 'next'
-import { headers } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { JsonLd } from '@/components/json-ld'
@@ -11,6 +11,7 @@ import { serverEnv } from '@/lib/env/server'
 import { NONCE_HEADER } from '@/lib/security/csp'
 import { CANONICAL_HEADER, languageAlternates, localizedPath, PATHNAME_HEADER } from '@/lib/seo/alternates'
 import { baseOpenGraph } from '@/lib/seo/metadata'
+import { cookieNames, openSession, sso } from '@/lib/sso/sso'
 import './globals.css'
 
 /**
@@ -94,6 +95,10 @@ export default async function RootLayout({ children }: LayoutProps<'/'>) {
     ])
     const nonce = requestHeaders.get(NONCE_HEADER) ?? undefined
     const site = serverEnv.SITE_URL
+    // The proxy has refreshed the session already; undefined while the site has no accounts.
+    const account = sso
+        ? (openSession(sso, (await cookies()).get(cookieNames().session)?.value)?.account ?? null)
+        : undefined
 
     return (
         <html lang={locale}>
@@ -105,7 +110,11 @@ export default async function RootLayout({ children }: LayoutProps<'/'>) {
                     {t('nav.skip')}
                 </a>
                 <NextIntlClientProvider>
-                    <SiteHeader languageNames={names} />
+                    <SiteHeader
+                        languageNames={names}
+                        account={account}
+                        accountUrl={sso ? `${sso.idUrl}/account` : undefined}
+                    />
                     <main
                         id="main"
                         className="mx-auto w-full max-w-5xl flex-1 px-4 py-10"

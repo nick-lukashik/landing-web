@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { type AppLocale } from '@/i18n/config'
+import { type Account } from '@/lib/sso/sso'
 import { cn } from '@/lib/utils'
 import { LocaleSwitch } from './locale-switch'
 
@@ -14,7 +15,23 @@ const links = [
     },
 ] as const
 
-export function SiteHeader({ languageNames }: { languageNames: Record<AppLocale, string> }) {
+const quiet =
+    'inline-flex h-11 items-center rounded-md px-3 text-sm font-medium text-muted-foreground hover:text-foreground'
+
+/**
+ * `account`: the person signed in here, null when nobody is, undefined while
+ * the site has no accounts (no sign-in link then). Sign-in and sign-out are a
+ * plain link and a plain form: both leave or reload the page anyway.
+ */
+export function SiteHeader({
+    languageNames,
+    account,
+    accountUrl,
+}: {
+    languageNames: Record<AppLocale, string>
+    account?: Account | null
+    accountUrl?: string
+}) {
     const t = useTranslations('nav')
     const pathname = usePathname()
     const isCurrent = (href: string) =>
@@ -41,7 +58,41 @@ export function SiteHeader({ languageNames }: { languageNames: Record<AppLocale,
                         </Link>
                     ))}
                 </nav>
-                <LocaleSwitch names={languageNames} />
+                <div className="flex flex-wrap items-center gap-1">
+                    {account === null ? (
+                        <a
+                            href={`/auth/sign-in?returnTo=${encodeURIComponent(pathname)}`}
+                            rel="nofollow"
+                            className={quiet}
+                        >
+                            {t('signIn')}
+                        </a>
+                    ) : account ? (
+                        <>
+                            <a
+                                href={accountUrl}
+                                className={quiet}
+                                title={t('signedInAs', {
+                                    name: account.email,
+                                })}
+                            >
+                                {account.name ?? account.email}
+                            </a>
+                            <form
+                                action="/auth/sign-out"
+                                method="post"
+                            >
+                                <button
+                                    type="submit"
+                                    className={quiet}
+                                >
+                                    {t('signOut')}
+                                </button>
+                            </form>
+                        </>
+                    ) : null}
+                    <LocaleSwitch names={languageNames} />
+                </div>
             </div>
         </header>
     )

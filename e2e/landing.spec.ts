@@ -53,3 +53,16 @@ test.describe('landing', () => {
         })
     })
 })
+
+test.describe('without accounts', () => {
+    test('there is no sign-in and the /auth routes are 404', async ({ page, request }) => {
+        await page.goto('/?lang=en')
+        await expect(
+            page.getByRole('link', {
+                name: en.nav.signIn,
+            }),
+        ).toHaveCount(0)
+        expect((await request.get('/auth/sign-in')).status()).toBe(404)
+        expect((await request.post('/auth/sign-out')).status()).toBe(404)
+    })
+})
