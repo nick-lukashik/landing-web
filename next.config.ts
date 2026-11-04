@@ -8,6 +8,13 @@ const config: NextConfig = {
     reactCompiler: true,
     typedRoutes: true,
     poweredByHeader: false,
+    experimental: {
+        // The language switch (src/i18n/actions.ts) is the only Server Action;
+        // its body stays within the 1 MiB request limit of the service contract.
+        serverActions: {
+            bodySizeLimit: '1mb',
+        },
+    },
     async headers() {
         return [
             {
