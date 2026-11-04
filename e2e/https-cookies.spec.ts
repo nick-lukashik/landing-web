@@ -1,3 +1,4 @@
+import { type APIResponse } from '@playwright/test'
 import { expect, test } from './fixtures'
 import { HTTPS_COOKIES_PORT } from './servers'
 
@@ -22,6 +23,13 @@ const cookie = (name: string) => ({
     sameSite: 'Lax' as const,
 })
 
+const expiring = (response: APIResponse, name: string) =>
+    response
+        .headersArray()
+        .filter(header => header.name.toLowerCase() === 'set-cookie')
+        .map(header => header.value)
+        .find(value => value.startsWith(`${name}=`))
+
 test('a session cookie that does not open is removed', async ({ page, context }) => {
     await context.addCookies([
         cookie(SESSION),
@@ -30,22 +38,18 @@ test('a session cookie that does not open is removed', async ({ page, context })
     expect((await context.cookies()).map(item => item.name)).not.toContain(SESSION)
 })
 
-test('a callback removes the pending sign-in cookie', async ({ page, context }) => {
-    await context.addCookies([
-        cookie(PENDING),
-    ])
-    await page.goto('/auth/callback?code=x&state=y')
-    expect((await context.cookies()).map(item => item.name)).not.toContain(PENDING)
+// Both redirect to the https SITE_URL, which this server does not serve, so
+// these two read the response instead of following it in the browser.
+test('a callback expires the pending sign-in cookie with Secure', async ({ request }) => {
+    const response = await request.get('/auth/callback?code=x&state=y', {
+        maxRedirects: 0,
+    })
+    expect(expiring(response, PENDING)).toMatch(/;\s*Secure/i)
 })
 
 test('sign-out expires the session cookie with Secure', async ({ request }) => {
     const response = await request.post('/auth/sign-out', {
         maxRedirects: 0,
     })
-    const expired = response
-        .headersArray()
-        .filter(header => header.name.toLowerCase() === 'set-cookie')
-        .map(header => header.value)
-        .find(value => value.startsWith(`${SESSION}=`))
-    expect(expired).toMatch(/;\s*Secure/i)
+    expect(expiring(response, SESSION)).toMatch(/;\s*Secure/i)
 })
