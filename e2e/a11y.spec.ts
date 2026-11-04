@@ -10,6 +10,8 @@ const WCAG = [
 ]
 const pages = [
     '/',
+    '/privacy',
+    '/terms',
     '/nowhere',
 ]
 

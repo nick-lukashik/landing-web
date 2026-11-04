@@ -54,6 +54,49 @@ test.describe('landing', () => {
     })
 })
 
+test.describe('privacy policy and terms', () => {
+    test('the footer leads to both, in both languages', async ({ page }) => {
+        for (const [lang, catalog] of [
+            [
+                'en',
+                en,
+            ],
+            [
+                'ru',
+                ru,
+            ],
+        ] as const) {
+            await page.goto(`/?lang=${lang}`)
+            await page
+                .getByRole('contentinfo')
+                .getByRole('link', {
+                    name: catalog.privacy.title,
+                })
+                .click()
+            await expect(page).toHaveURL(/\/privacy$/)
+            await expect(
+                page.getByRole('heading', {
+                    level: 1,
+                    name: catalog.privacy.title,
+                }),
+            ).toBeVisible()
+            await page
+                .getByRole('contentinfo')
+                .getByRole('link', {
+                    name: catalog.terms.title,
+                })
+                .click()
+            await expect(page).toHaveURL(/\/terms$/)
+            await expect(
+                page.getByRole('heading', {
+                    level: 1,
+                    name: catalog.terms.title,
+                }),
+            ).toBeVisible()
+        }
+    })
+})
+
 test.describe('without accounts', () => {
     test('there is no sign-in and the /auth routes are 404', async ({ page, request }) => {
         await page.goto('/?lang=en')
