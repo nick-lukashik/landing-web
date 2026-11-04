@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { LOCALE_COOKIE, LOCALE_COOKIE_MAX_AGE, LOCALE_HEADER, LOCALE_PARAM } from '@/i18n/config'
+import { LOCALE_COOKIE, LOCALE_HEADER, LOCALE_PARAM, localeCookieOptions } from '@/i18n/config'
 import { resolveLocale } from '@/i18n/resolve'
 import { REQUEST_ID_HEADER, requestIdFrom } from '@/lib/request-id'
 import { buildCsp, createNonce, NONCE_HEADER } from '@/lib/security/csp'
@@ -57,12 +57,7 @@ export function proxy(request: NextRequest) {
     response.headers.set('x-app-version', version)
     if (csp) response.headers.set('content-security-policy', csp)
     if (persistLocale) {
-        response.cookies.set(LOCALE_COOKIE, persistLocale, {
-            path: '/',
-            maxAge: LOCALE_COOKIE_MAX_AGE,
-            sameSite: 'lax',
-            secure: https,
-        })
+        response.cookies.set(LOCALE_COOKIE, persistLocale, localeCookieOptions(https))
     }
     return response
 }
