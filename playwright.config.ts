@@ -70,6 +70,7 @@ export default defineConfig({
               }),
               site(NOINDEX_PORT, {
                   ROBOTS: 'noindex',
+                  GTM_ID: 'GTM-E2ETEST',
               }),
               {
                   command: 'node e2e/mock-id.mjs',

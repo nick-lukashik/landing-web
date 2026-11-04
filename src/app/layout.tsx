@@ -5,6 +5,7 @@ import { getLocale, getTranslations } from 'next-intl/server'
 import { JsonLd } from '@/components/json-ld'
 import { SiteFooter } from '@/components/site-footer'
 import { SiteHeader } from '@/components/site-header'
+import { TagManager } from '@/components/tag-manager'
 import { type AppLocale, defaultLocale, isLocale, locales } from '@/i18n/config'
 import { contacts } from '@/lib/contacts'
 import { serverEnv } from '@/lib/env/server'
@@ -103,6 +104,10 @@ export default async function RootLayout({ children }: LayoutProps<'/'>) {
     return (
         <html lang={locale}>
             <body className="flex min-h-dvh flex-col">
+                <TagManager
+                    id={serverEnv.GTM_ID}
+                    nonce={nonce}
+                />
                 <a
                     href="#main"
                     className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:shadow"

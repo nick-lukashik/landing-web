@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { LOCALE_COOKIE, LOCALE_HEADER, LOCALE_PARAM, localeCookieOptions } from '@/i18n/config'
 import { resolveLocale } from '@/i18n/resolve'
+import { serverEnv } from '@/lib/env/server'
 import { REQUEST_ID_HEADER, requestIdFrom } from '@/lib/request-id'
 import { buildCsp, createNonce, NONCE_HEADER } from '@/lib/security/csp'
 import { CANONICAL_HEADER, canonicalPath, PATHNAME_HEADER } from '@/lib/seo/alternates'
@@ -50,6 +51,7 @@ export async function proxy(request: NextRequest) {
             nonce,
             dev: process.env.NODE_ENV === 'development',
             https,
+            analytics: Boolean(serverEnv.GTM_ID),
             // "Sign out" goes on to the account site, which ends its session too.
             formActions: sso
                 ? [
