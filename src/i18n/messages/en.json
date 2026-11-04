@@ -91,7 +91,7 @@
         "retry": "Try again"
     },
     "legal": {
-        "updated": "Last updated: 4 November 2026",
+        "updated": "Last updated: 5 November 2026",
         "contact": "Questions and requests",
         "contactText": "Write on Telegram: <link>{handle}</link>. Requests are answered within 30 days."
     },
@@ -121,7 +121,7 @@
                     "__Host-id_session at id.nick-lukashik.com and __Host-site_session at nick-lukashik.com: your session, encrypted. They are HttpOnly, so scripts cannot read them, and live for thirty days.",
                     "__Host-id_login, __Host-id_google and __Host-site_sso: a sign-in in progress. They live for ten minutes and are deleted when sign-in is complete.",
                     "nl_hint: a note that this browser is signed in at id.nick-lukashik.com, set for the whole nick-lukashik.com domain, so this site can let you in without signing in again. It holds no personal data, just “1”, and goes away when you sign out there.",
-                    "site_silent: this site’s note about automatic sign-in: “tried” for five minutes after an attempt (a day if it failed in a way that would repeat), “silent” while a session opened automatically lives, “out” for a year after you sign out here, so the site never lets you back in without you.",
+                    "site_silent: this site’s note about automatic sign-in, just “tried”: kept for five minutes after an attempt (a day if it failed in a way that would repeat), so the site does not try again on every page. It is deleted when you sign in.",
                     "Cloudflare, which delivers the sites, may set its own security cookies such as __cf_bm to tell people from bots.",
                     "All of them are needed for the sites to work, so they need no consent."
                 ]
@@ -140,7 +140,7 @@
                 "title": "How long it is kept",
                 "items": [
                     "Account data stays until you ask to delete the account.",
-                    "Sign-in codes expire after ten minutes. A session ends thirty days after its last activity at the latest; ended sessions are kept for a limited time to investigate misuse.",
+                    "Sign-in codes expire after ten minutes and are deleted after 24 hours. A session ends thirty days after its last activity at the latest; ended sessions are kept for 90 days to investigate misuse, then deleted.",
                     "Payment records are kept as long as accounting rules require.",
                     "Server logs: 30 days. Backups are encrypted and replaced on a rolling basis."
                 ]

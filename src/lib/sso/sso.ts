@@ -35,6 +35,7 @@ export type SiteSession = {
     accessExpiresAt: number
     refreshToken: string
     sessionId: string
+    /** As id-api said at sign-in and again at every refresh: a new name shows within one access token. */
     account: Account
 }
 
