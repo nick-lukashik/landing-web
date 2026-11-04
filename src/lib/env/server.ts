@@ -3,6 +3,8 @@ import { z } from 'zod'
 
 const blankAsMissing = (value: unknown) => (typeof value === 'string' && value.trim() === '' ? undefined : value)
 const unsetIfBlank = <T extends z.ZodType>(schema: T) => z.preprocess(blankAsMissing, schema)
+/** `next build` evaluates route modules too; the image is built without secrets. */
+const building = process.env.NEXT_PHASE === 'phase-production-build'
 
 /**
  * Server-only configuration, read at runtime (one image for every
@@ -28,6 +30,17 @@ const schema = z
                 ])
                 .default('info'),
         ),
+        /**
+         * Sign-in through the account site. Public origin of id-web
+         * (https://id.nick-lukashik.com), id-api inside the cluster, and the key
+         * of this site's own sealed session cookie. Without all three the site
+         * has no accounts: no sign-in link, the /auth routes answer 404.
+         */
+        ID_URL: unsetIfBlank(z.url().optional()),
+        ID_API_URL: unsetIfBlank(z.url().optional()),
+        SESSION_SECRET: building
+            ? z.string().optional()
+            : unsetIfBlank(z.string().min(32, 'at least 32 characters').optional()),
         /** `noindex` (stage): robots.txt disallows everything, pages say noindex. */
         ROBOTS: unsetIfBlank(
             z
@@ -41,6 +54,8 @@ const schema = z
     .transform(env => ({
         ...env,
         SITE_URL: env.SITE_URL.replace(/\/+$/, ''),
+        ID_URL: env.ID_URL?.replace(/\/+$/, ''),
+        ID_API_URL: env.ID_API_URL?.replace(/\/+$/, ''),
     }))
 
 const parsed = schema.safeParse(process.env)

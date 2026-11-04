@@ -10,6 +10,7 @@ describe('buildRobots', () => {
                 allow: '/',
                 disallow: [
                     '/api/',
+                    '/auth/',
                     '/health/',
                 ],
             },

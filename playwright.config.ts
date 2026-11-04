@@ -1,9 +1,10 @@
 import { defineConfig, devices } from '@playwright/test'
-import { NOINDEX_PORT, SITE_PORT } from './e2e/servers'
+import { ID_PORT, NOINDEX_PORT, SITE_PORT, SSO_PORT } from './e2e/servers'
 
 // The suite runs against the production build (`pnpm build` first), started
-// below twice: ROBOTS=index and ROBOTS=noindex. PW_BASE_URL points it at a
-// running site instead.
+// below three times: ROBOTS=index and ROBOTS=noindex without accounts, and
+// with accounts on against e2e/mock-id.mjs. PW_BASE_URL points it at a
+// running site instead (the sign-in tests skip then).
 const external = process.env.PW_BASE_URL
 const baseURL = external ?? `http://127.0.0.1:${SITE_PORT}`
 const site = (port: number, env: Record<string, string>) => ({
@@ -69,6 +70,22 @@ export default defineConfig({
               }),
               site(NOINDEX_PORT, {
                   ROBOTS: 'noindex',
+              }),
+              {
+                  command: 'node e2e/mock-id.mjs',
+                  url: `http://127.0.0.1:${ID_PORT}/health`,
+                  env: {
+                      PORT: String(ID_PORT),
+                  },
+                  reuseExistingServer: false,
+                  timeout: 30_000,
+              },
+              site(SSO_PORT, {
+                  ROBOTS: 'index',
+                  ID_URL: `http://127.0.0.1:${ID_PORT}`,
+                  ID_API_URL: `http://127.0.0.1:${ID_PORT}`,
+                  // Test only: the sealed cookies of this run.
+                  SESSION_SECRET: 'e2e-site-session-secret-0123456789abcdef',
               }),
           ],
 })

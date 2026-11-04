@@ -11,7 +11,11 @@
         "skip": "Skip to content",
         "label": "Main",
         "home": "Home",
-        "language": "Language"
+        "language": "Language",
+        "signIn": "Sign in",
+        "account": "Account",
+        "signOut": "Sign out",
+        "signedInAs": "Signed in as {name}"
     },
     "footer": {
         "role": "Senior full-stack engineer",
@@ -74,5 +78,15 @@
         "title": "Page not found",
         "body": "There is no page at this address. It may have moved or never existed.",
         "home": "Go to the home page"
+    },
+    "authError": {
+        "title": "Sign-in did not work",
+        "reasons": {
+            "state": "The sign-in was started in another tab or took too long.",
+            "denied": "The sign-in was cancelled.",
+            "failed": "The account site did not confirm the sign-in.",
+            "unavailable": "The account site is not answering right now."
+        },
+        "retry": "Try again"
     }
 }
