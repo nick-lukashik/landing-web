@@ -6,6 +6,7 @@ import {
     cookieNames,
     cookieOptions,
     exchangeCode,
+    expiredCookie,
     openPending,
     openSession,
     SESSION_MAX_AGE,
@@ -32,7 +33,7 @@ export async function GET(request: NextRequest) {
     const names = cookieNames()
     const pending = openPending(sso, request.cookies.get(names.pending)?.value)
     const done = (response: ReturnType<typeof to>) => {
-        response.cookies.delete(names.pending)
+        response.cookies.set(names.pending, '', expiredCookie())
         return response
     }
 
