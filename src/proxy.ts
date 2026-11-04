@@ -3,7 +3,7 @@ import { LOCALE_COOKIE, LOCALE_HEADER, LOCALE_PARAM, localeCookieOptions } from 
 import { resolveLocale } from '@/i18n/resolve'
 import { REQUEST_ID_HEADER, requestIdFrom } from '@/lib/request-id'
 import { buildCsp, createNonce, NONCE_HEADER } from '@/lib/security/csp'
-import { PATHNAME_HEADER } from '@/lib/seo/alternates'
+import { CANONICAL_HEADER, canonicalPath, PATHNAME_HEADER } from '@/lib/seo/alternates'
 
 // Read at runtime: the same image reports what the deploy sets.
 const version = process.env.APP_VERSION || 'dev'
@@ -45,6 +45,7 @@ export function proxy(request: NextRequest) {
         })
         forwarded.set(LOCALE_HEADER, locale.locale)
         forwarded.set(PATHNAME_HEADER, pathname)
+        forwarded.set(CANONICAL_HEADER, canonicalPath(pathname, locale.locale, locale.source === 'query'))
         if (locale.persist) persistLocale = locale.locale
     }
 

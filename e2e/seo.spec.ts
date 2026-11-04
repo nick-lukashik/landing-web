@@ -1,6 +1,14 @@
 import { en, expect, NOINDEX_URL, test } from './fixtures'
 
 test.describe('SEO and security', () => {
+    test('the bare path is its own canonical (x-default)', async ({ page, baseURL }) => {
+        await page.goto('/')
+        const self = new RegExp(`^${baseURL}/?$`)
+        await expect(page.locator('link[rel="canonical"]').first()).toHaveAttribute('href', self)
+        await expect(page.locator('meta[property="og:url"]').first()).toHaveAttribute('content', self)
+        await expect(page.locator('link[rel="alternate"][hreflang="x-default"]').first()).toHaveAttribute('href', self)
+    })
+
     test('robots.txt allows the site and points at the sitemap', async ({ request, baseURL }) => {
         const response = await request.get('/robots.txt')
         expect(response.ok()).toBe(true)
