@@ -2,7 +2,7 @@
 // the id-api calls this site makes (oauth/token, me, sessions/refresh and
 // logout), none of their rules beyond what the tests need. "Signed in at
 // id-web" is the `id_session` cookie the test sets for this host: an email,
-// or `deny` for a person who cancels. Emails starting with `short-` get 30 s
+// or `deny` for a person who cancels. /logout drops it and the hint. Emails starting with `short-` get 30 s
 // tokens (under the site's 60 s refresh margin). /test/* lets a test look.
 import { createHash, randomBytes, randomUUID } from 'node:crypto'
 import { createServer } from 'node:http'
@@ -48,6 +48,18 @@ createServer(async (request, response) => {
         return json(response, 200, {
             status: 'ok',
         })
+    // id-web's /logout: ends "the session at id-web" (the cookie and the hint) and goes back.
+    if (url.pathname === '/logout') {
+        const back = url.searchParams.get('return') ?? ''
+        response.writeHead(303, {
+            location: back.startsWith('http://127.0.0.1:') ? back : '/',
+            'set-cookie': [
+                'id_session=; Max-Age=0; Path=/',
+                'nl_hint=; Max-Age=0; Path=/',
+            ],
+        })
+        return response.end()
+    }
     if (url.pathname === '/authorize') {
         const q = url.searchParams
         const back = new URL(q.get('redirect_uri') ?? '')
@@ -65,6 +77,12 @@ createServer(async (request, response) => {
         back.searchParams.set('state', q.get('state') ?? '')
         response.writeHead(302, {
             location: back.toString(),
+            // As id-web: signed in there means the hint on the parent domain.
+            ...(who && who !== 'deny'
+                ? {
+                      'set-cookie': 'nl_hint=1; Path=/; HttpOnly; SameSite=Lax',
+                  }
+                : {}),
         })
         return response.end()
     }

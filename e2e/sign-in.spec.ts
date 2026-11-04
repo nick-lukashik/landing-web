@@ -89,6 +89,8 @@ test.describe('sign-in through the account site', () => {
             }),
         ).toBeVisible()
         expect((await sessionsAt(page, email)).live).toBe(0)
+        // Signed out of the account site too: the way back went through its /logout.
+        expect((await context.cookies(ID_URL)).find(cookie => cookie.name === 'id_session')).toBeUndefined()
     })
 
     test('a visitor signed in at the account site is signed in here without a click', async ({ page, context }) => {
@@ -98,7 +100,7 @@ test.describe('sign-in through the account site', () => {
         await expect(header(page).getByText('Named Person')).toBeVisible()
         await expect(page).toHaveURL(`${SSO_URL}/?lang=en`)
 
-        // Signed out at the account site (the hint is gone): the silent session ends here too.
+        // Signed out at the account site (the hint is gone): the session ends here too.
         await context.clearCookies({
             name: 'nl_hint',
         })
@@ -135,7 +137,10 @@ test.describe('sign-in through the account site', () => {
         expect(visits.filter(path => path === '/auth/sign-in')).toHaveLength(1)
     })
 
-    test('after "Sign out" here, the account site does not sign the person back in', async ({ page, context }) => {
+    test('"Sign out" here signs out of the account site too, so nothing signs the person back in', async ({
+        page,
+        context,
+    }) => {
         const email = `e2e-${randomUUID()}@example.com`
         await signedInAtId(context, email)
         await page.goto('/?lang=en')
@@ -145,19 +150,38 @@ test.describe('sign-in through the account site', () => {
                 name: en.nav.signOut,
             })
             .click()
+        await expect(page).toHaveURL(`${SSO_URL}/`)
         await page.reload()
         await expect(
             header(page).getByRole('link', {
                 name: en.nav.signIn,
             }),
         ).toBeVisible()
+        const names = (await context.cookies()).map(cookie => cookie.name)
+        expect(names).not.toContain('nl_hint')
+        expect(names).not.toContain('id_session')
+    })
+
+    test('a session the person asked for ends too when the account site signs out', async ({ page, context }) => {
+        const email = `e2e-${randomUUID()}@example.com`
+        await signedInAtId(context, email)
+        await page.goto('/auth/sign-in?returnTo=%2F%3Flang%3Den')
+        await expect(header(page).getByText(email)).toBeVisible()
+        await context.clearCookies({
+            name: 'nl_hint',
+        })
+        await page.reload()
+        await expect(
+            header(page).getByRole('link', {
+                name: en.nav.signIn,
+            }),
+        ).toBeVisible()
+        expect((await sessionsAt(page, email)).live).toBe(0)
     })
 
     test('an expiring token is refreshed before the page, a revoked session ends', async ({ page, context }) => {
         const email = `short-${randomUUID()}@example.com`
-        await signedInAtId(context, email, {
-            hint: false,
-        })
+        await signedInAtId(context, email)
         await page.goto('/auth/sign-in?returnTo=%2F%3Flang%3Den')
         await expect(header(page).getByText(email)).toBeVisible()
         const before = (await sessionsAt(page, email)).refresh
@@ -165,11 +189,15 @@ test.describe('sign-in through the account site', () => {
         await expect(header(page).getByText(email)).toBeVisible()
         expect((await sessionsAt(page, email)).refresh).toBeGreaterThan(before)
 
-        // "Sign out everywhere" at the account site.
+        // Signed out everywhere from another device: this site's session and the
+        // account site's session of this browser are both gone.
         await page.request.post(`${ID_URL}/test/revoke`, {
             data: {
                 email,
             },
+        })
+        await context.clearCookies({
+            name: 'id_session',
         })
         await page.reload()
         await expect(

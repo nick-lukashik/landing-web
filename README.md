@@ -24,11 +24,12 @@ The site signs in through the account site (`id.nick-lukashik.com`), as the prev
 |---|---|
 | `GET /auth/sign-in?returnTo=` | Seals state, PKCE verifier and the return path into `__Host-site_sso` (10 minutes) and sends the browser to `id.nick-lukashik.com/authorize` |
 | `GET /auth/callback` | Checks the state, exchanges the code at `id-api` (server to server) for this site's own session, back to the return path |
-| `POST /auth/sign-out` | Ends this site's session at `id-api`; the session at the account site stays |
+| `POST /auth/sign-out` | Ends this site's session at `id-api`, then goes to id-web's `/logout`: the account site and every other site of the platform sign out too, and the browser comes back here |
 | `/auth/error` | A sign-in the person asked for did not work, and "Try again" |
 
 - **The session.** `__Host-site_session`: tokens and the name to show, sealed with AES-256-GCM under `SESSION_SECRET`, `HttpOnly`, 30 days. The proxy refreshes it with less than 60 s left and asks `id-api` for the name again then.
-- **Silent sign-in** (`src/lib/sso/silent.ts`). The account site keeps `nl_hint=1` on the parent domain while it is signed in. A page visit with the hint and no session here goes once through `/auth/sign-in?silent=1` (`prompt=none`: no page at the account site) and comes back signed in, or signed out without an error. Never for crawlers, prefetches or Lighthouse, at most once per 5 minutes; after "Sign out" here, not until the person signs in here again. A session that came this way ends when the hint goes.
+- **Silent sign-in** (`src/lib/sso/silent.ts`): signed in at the account site means signed in here, with no click. The account site keeps `nl_hint=1` on the parent domain while it is signed in. A page visit with the hint and no session here goes once through `/auth/sign-in?silent=1` (`prompt=none`: no page at the account site) and comes back signed in, or signed out without an error. Never for crawlers, prefetches or Lighthouse; at most once per 5 minutes (`site_silent=tried`).
+- **Sign-out is for the whole account.** "Sign out" here or on the account site signs out of every site in this browser: id-api ends the sessions signed in from the account site's session, and a session here ends as soon as the hint is gone.
 - Pages stay the same for everyone except the header, which reads the cookie.
 
 | Variable | What |

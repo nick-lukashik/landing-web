@@ -1,5 +1,5 @@
 import { type NextRequest } from 'next/server'
-import { markSilent, off, to } from '@/lib/sso/respond'
+import { markTried, off, to } from '@/lib/sso/respond'
 import { SILENT_COOKIE, SILENT_FAILED_SECONDS } from '@/lib/sso/silent'
 import {
     clientIp,
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
         if (pending.silent) {
             const response = done(to(pending.returnTo))
             if (error !== 'login_required' && error !== 'temporarily_unavailable')
-                markSilent(response, 'tried', SILENT_FAILED_SECONDS)
+                markTried(response, SILENT_FAILED_SECONDS)
             return response
         }
         return done(to(`/auth/error?reason=${error === 'access_denied' ? 'denied' : 'failed'}`))
@@ -61,15 +61,13 @@ export async function GET(request: NextRequest) {
     if (typeof session === 'string') {
         if (pending.silent) {
             const response = done(to(pending.returnTo))
-            if (session === 'invalid_grant') markSilent(response, 'tried', SILENT_FAILED_SECONDS)
+            if (session === 'invalid_grant') markTried(response, SILENT_FAILED_SECONDS)
             return response
         }
         return done(to(`/auth/error?reason=${session === 'unavailable' ? 'unavailable' : 'failed'}`))
     }
     const response = done(to(pending.returnTo))
     response.cookies.set(names.session, sealSession(sso, session), cookieOptions(SESSION_MAX_AGE))
-    // A session from silent sign-in ends with the one at id-web; one the person asked for clears any mark.
-    if (pending.silent) markSilent(response, 'silent')
-    else if (request.cookies.has(SILENT_COOKIE)) response.cookies.delete(SILENT_COOKIE)
+    if (request.cookies.has(SILENT_COOKIE)) response.cookies.delete(SILENT_COOKIE)
     return response
 }

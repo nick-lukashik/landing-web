@@ -1,7 +1,7 @@
 import 'server-only'
 import { NextResponse } from 'next/server'
 import { serverEnv } from '@/lib/env/server'
-import { SILENT_COOKIE, SILENT_SECONDS, type SilentMark } from './silent'
+import { SILENT_COOKIE, SILENT_TRIED_SECONDS } from './silent'
 import { https } from './sso'
 
 /** A redirect to a path of this site (303: the next request is a GET). Never stored by a cache. */
@@ -21,8 +21,9 @@ export function off() {
     })
 }
 
-export function markSilent(response: NextResponse, mark: SilentMark, maxAge = SILENT_SECONDS[mark]) {
-    response.cookies.set(SILENT_COOKIE, mark, {
+/** A silent attempt was made: none again for `maxAge` seconds. */
+export function markTried(response: NextResponse, maxAge = SILENT_TRIED_SECONDS) {
+    response.cookies.set(SILENT_COOKIE, 'tried', {
         httpOnly: true,
         secure: https(),
         sameSite: 'lax',
