@@ -9,6 +9,7 @@ import {
     cookieNames,
     cookieOptions,
     endSession,
+    expiredCookie,
     openSession,
     REFRESH_BEFORE_MS,
     refreshSession,
@@ -109,7 +110,7 @@ async function keepAccount(request: NextRequest): Promise<AccountStep | undefine
     const drop = () => {
         request.cookies.delete(name)
         session = undefined
-        writes.push(response => response.cookies.delete(name))
+        writes.push(response => response.cookies.set(name, '', expiredCookie()))
     }
 
     if (sealed && !session) drop()

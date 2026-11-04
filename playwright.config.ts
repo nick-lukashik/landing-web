@@ -1,5 +1,5 @@
 import { defineConfig, devices } from '@playwright/test'
-import { ID_PORT, NOINDEX_PORT, SITE_PORT, SSO_PORT } from './e2e/servers'
+import { HTTPS_COOKIES_PORT, ID_PORT, NOINDEX_PORT, SITE_PORT, SSO_PORT } from './e2e/servers'
 
 // The suite runs against the production build (`pnpm build` first), started
 // below three times: ROBOTS=index and ROBOTS=noindex without accounts, and
@@ -85,6 +85,13 @@ export default defineConfig({
                   ID_URL: `http://127.0.0.1:${ID_PORT}`,
                   ID_API_URL: `http://127.0.0.1:${ID_PORT}`,
                   // Test only: the sealed cookies of this run.
+                  SESSION_SECRET: 'e2e-site-session-secret-0123456789abcdef',
+              }),
+              site(HTTPS_COOKIES_PORT, {
+                  ROBOTS: 'index',
+                  SITE_URL: `https://localhost:${HTTPS_COOKIES_PORT}`,
+                  ID_URL: `http://127.0.0.1:${ID_PORT}`,
+                  ID_API_URL: `http://127.0.0.1:${ID_PORT}`,
                   SESSION_SECRET: 'e2e-site-session-secret-0123456789abcdef',
               }),
           ],

@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { serverEnv } from '@/lib/env/server'
 import { off } from '@/lib/sso/respond'
-import { cookieNames, endSession, openSession, sso } from '@/lib/sso/sso'
+import { cookieNames, endSession, expiredCookie, openSession, sso } from '@/lib/sso/sso'
 
 export const dynamic = 'force-dynamic'
 
@@ -24,6 +24,6 @@ export async function POST(request: NextRequest) {
     target.searchParams.set('return', `${serverEnv.SITE_URL}/`)
     const response = NextResponse.redirect(target, 303)
     response.headers.set('cache-control', 'private, no-store')
-    response.cookies.delete(name)
+    response.cookies.set(name, '', expiredCookie())
     return response
 }
