@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { contacts } from '@/lib/contacts'
 import { serverEnv } from '@/lib/env/server'
@@ -24,6 +25,26 @@ export async function SiteFooter() {
                                 </a>
                             </li>
                         ))}
+                    </ul>
+                </nav>
+                <nav aria-label={t('footer.legal')}>
+                    <ul className="flex flex-wrap gap-4">
+                        <li>
+                            <Link
+                                className="underline-offset-4 hover:underline"
+                                href="/privacy"
+                            >
+                                {t('privacy.title')}
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
+                                className="underline-offset-4 hover:underline"
+                                href="/terms"
+                            >
+                                {t('terms.title')}
+                            </Link>
+                        </li>
                     </ul>
                 </nav>
                 <p>

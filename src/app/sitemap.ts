@@ -26,12 +26,20 @@ function localized(path: string, extra: Omit<Entry, 'url'> = {}): MetadataRoute.
     }))
 }
 
-/** Every public page: the landing is one page. */
+/** Every public page: the landing, and the privacy policy and terms. */
 export default function sitemap(): MetadataRoute.Sitemap {
     return [
         ...localized('/', {
             changeFrequency: 'weekly',
             priority: 1,
+        }),
+        ...localized('/privacy', {
+            changeFrequency: 'yearly',
+            priority: 0.3,
+        }),
+        ...localized('/terms', {
+            changeFrequency: 'yearly',
+            priority: 0.3,
         }),
     ]
 }

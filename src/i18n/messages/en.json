@@ -20,7 +20,8 @@
     "footer": {
         "role": "Senior full-stack engineer",
         "version": "Version {version}",
-        "links": "Contacts"
+        "links": "Contacts",
+        "legal": "About this site"
     },
     "home": {
         "meta": {
@@ -88,5 +89,125 @@
             "unavailable": "The account site is not answering right now."
         },
         "retry": "Try again"
+    },
+    "legal": {
+        "updated": "Last updated: 4 November 2026",
+        "contact": "Questions and requests",
+        "contactText": "Write on Telegram: <link>{handle}</link>. Requests are answered within 30 days."
+    },
+    "privacy": {
+        "meta": {
+            "title": "Privacy",
+            "description": "What data nick-lukashik.com and its account services handle, why, and how you stay in control."
+        },
+        "title": "Privacy",
+        "intro": "nick-lukashik.com and its account services (the account at id.nick-lukashik.com, the coin wallet and payments) are run by Nick Lukashik, an independent engineer. This page says what data they handle, why, and how you stay in control.",
+        "sections": [
+            {
+                "title": "What is collected and why",
+                "items": [
+                    "Account: your email address, an optional display name and your language, to sign you in and to write to you about your account.",
+                    "Sign-in: one-time email codes, stored only as a keyed hash and valid for ten minutes. With Google sign-in: your Google account ID, email address and name. With a passkey: its public key, its ID and a name such as “Chrome on macOS”. Your fingerprint or face never leaves your device.",
+                    "Sessions: for each one, the browser and operating system, the IP address, how you signed in, and the time of sign-in and of last activity, to protect the account and to show you where you are signed in.",
+                    "Wallet and payments: your coin balance and its history, and for each payment the pack, the amount, the currency, the status and the payment provider’s reference. Card details are entered on the provider’s page and never reach this platform.",
+                    "Notifications: the messages in your account inbox and the emails sent to you (sign-in codes, receipts).",
+                    "This website: no analytics, no advertising, no tracking. Server logs with IP addresses are kept for 30 days for security and troubleshooting."
+                ]
+            },
+            {
+                "title": "Cookies",
+                "items": [
+                    "locale: your language, kept for one year.",
+                    "__Host-id_session at id.nick-lukashik.com and __Host-site_session at nick-lukashik.com: your session, encrypted. They are HttpOnly, so scripts cannot read them, and live for thirty days.",
+                    "__Host-id_login, __Host-id_google and __Host-site_sso: a sign-in in progress. They live for ten minutes and are deleted when sign-in is complete.",
+                    "nl_hint: a note that this browser is signed in at id.nick-lukashik.com, set for the whole nick-lukashik.com domain, so this site can let you in without signing in again. It holds no personal data, just “1”, and goes away when you sign out there.",
+                    "site_silent: this site’s note about automatic sign-in: “tried” for five minutes after an attempt (a day if it failed in a way that would repeat), “silent” while a session opened automatically lives, “out” for a year after you sign out here, so the site never lets you back in without you.",
+                    "Cloudflare, which delivers the sites, may set its own security cookies such as __cf_bm to tell people from bots.",
+                    "All of them are needed for the sites to work, so they need no consent."
+                ]
+            },
+            {
+                "title": "Who else processes data",
+                "items": [
+                    "The hosting provider of the server the platform runs on.",
+                    "Cloudflare: every request passes through its network, which protects and delivers the sites. It also runs the domain name system and stores encrypted backups.",
+                    "Google: only if you choose to sign in with Google. It shares your account ID, email address, whether the email is verified, and your name.",
+                    "An email delivery service, for sign-in codes and receipts.",
+                    "Lava (lava.top): payment processing, once payments are available."
+                ]
+            },
+            {
+                "title": "How long it is kept",
+                "items": [
+                    "Account data stays until you ask to delete the account.",
+                    "Sign-in codes expire after ten minutes. A session ends thirty days after its last activity at the latest; ended sessions are kept for a limited time to investigate misuse.",
+                    "Payment records are kept as long as accounting rules require.",
+                    "Server logs: 30 days. Backups are encrypted and replaced on a rolling basis."
+                ]
+            },
+            {
+                "title": "Your choices",
+                "items": [
+                    "Change your name and language, add or remove passkeys, link or unlink Google and end sessions in your account at id.nick-lukashik.com.",
+                    "To get a copy of your data or to delete your account, write to the contact below."
+                ]
+            },
+            {
+                "title": "Changes",
+                "items": [
+                    "If this policy changes in a meaningful way, signed-in users get a notice in the account inbox before the change takes effect."
+                ]
+            }
+        ]
+    },
+    "terms": {
+        "meta": {
+            "title": "Terms of service",
+            "description": "The rules of nick-lukashik.com and its account services: the account, coins, payments and fair use."
+        },
+        "title": "Terms of service",
+        "intro": "These terms apply to nick-lukashik.com and its account services (id.nick-lukashik.com, the coin wallet and payments), run by Nick Lukashik. Creating an account means you accept them.",
+        "sections": [
+            {
+                "title": "The account",
+                "items": [
+                    "You sign in with a code sent to your email, a passkey or Google. Whoever controls your email or your devices can sign in, so keep them safe.",
+                    "You can end any of your sessions in the account, and delete the account on request."
+                ]
+            },
+            {
+                "title": "Coins",
+                "items": [
+                    "Coins are a virtual unit for the platform’s apps. They have no cash value: they cannot be withdrawn, exchanged for money or sent to another person.",
+                    "Packs: 100 coins for $1, 550 for $5 and 1200 for $10, or the price shown in rubles or euros. You pay the price you saw at checkout.",
+                    "Coins are credited once the payment provider confirms the payment. A purchase is final once the coins are credited, unless the law of your country gives you a right to a refund. If something went wrong with a payment, write to the contact below."
+                ]
+            },
+            {
+                "title": "Subscriptions",
+                "items": [
+                    "Once subscriptions are available, a subscription gives extra features for the period paid. When the period ends without a renewal, the features end too."
+                ]
+            },
+            {
+                "title": "Fair use",
+                "items": [
+                    "Do not try to break the services or other people’s use of them, get into accounts that are not yours, or abuse sign-in or payments with automated tools. An account that does may be suspended."
+                ]
+            },
+            {
+                "title": "The service as it is",
+                "items": [
+                    "The services are run by one engineer and provided as they are. Every effort goes into keeping them running and your data safe, but they may sometimes be unavailable or contain errors.",
+                    "Nothing in these terms takes away rights that the law gives you and that cannot be waived."
+                ]
+            },
+            {
+                "title": "Changes",
+                "items": [
+                    "If these terms change in a meaningful way, signed-in users get a notice in the account inbox before the change takes effect."
+                ]
+            }
+        ]
     }
 }

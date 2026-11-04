@@ -33,6 +33,16 @@ test.describe('SEO and security', () => {
             title: en.home.meta.title,
             description: en.home.meta.description,
         },
+        {
+            path: '/privacy',
+            title: `${en.privacy.meta.title} · ${en.meta.siteName}`,
+            description: en.privacy.meta.description,
+        },
+        {
+            path: '/terms',
+            title: `${en.terms.meta.title} · ${en.meta.siteName}`,
+            description: en.terms.meta.description,
+        },
     ]) {
         test(`${path} has title, description, canonical, hreflang, Open Graph and JSON-LD`, async ({
             page,
