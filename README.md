@@ -1,6 +1,6 @@
 # landing-web
 
-The site on `https://nick-lukashik.com`, in English and Russian: a main page with who I am, how I work and where to reach me, the privacy policy and terms, and sign-in through the account site ([Accounts](#accounts)). Made from [`next-starter`](https://github.com/nick-lukashik/next-starter) (`.template-version`); the design is stock shadcn/ui, the text and links come from the previous site (`outegro-dev/platform`, `apps/landing-web`).
+The site on `https://nick-lukashik.com`, in English and Russian: a main page with who I am, how I work and where to reach me, the privacy policy and terms, and sign-in through the account site ([Accounts](#accounts)). Made from [`next-starter`](https://github.com/nick-lukashik/next-starter) (`.template-version`); the design is stock shadcn/ui, the text and links come from the previous site, whose repository no longer exists.
 
 Everything the starter documents applies here: commands, SEO, CSP, health probes, Docker, CI and deploy (see its README). Only what is specific to this site is below.
 
