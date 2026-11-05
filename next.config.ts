@@ -1,7 +1,6 @@
 import { type NextConfig } from 'next'
 import createNextIntlPlugin from 'next-intl/plugin'
 import { securityHeaders } from './src/lib/security/headers'
-import { shortLinkRedirects } from './src/lib/short-links'
 
 const config: NextConfig = {
     // A self-contained server.js with only the traced dependencies (Dockerfile).
@@ -15,9 +14,6 @@ const config: NextConfig = {
         serverActions: {
             bodySizeLimit: '1mb',
         },
-    },
-    async redirects() {
-        return shortLinkRedirects()
     },
     async headers() {
         return [
