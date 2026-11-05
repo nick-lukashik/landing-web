@@ -131,7 +131,7 @@ type Tokens = {
     sessionId: string
 }
 
-/** One call to id-api: JSON in and out, a 5 s budget. `undefined` when it could not be asked. */
+/** One call to id-api: JSON in and out, a 5 s budget by default. `undefined` when it could not be asked. */
 async function idApi<T>(
     config: Sso,
     path: string,
@@ -140,6 +140,7 @@ async function idApi<T>(
         token?: string
         body?: unknown
         clientIp?: string
+        timeoutMs?: number
     } = {},
 ): Promise<
     | {
@@ -170,7 +171,7 @@ async function idApi<T>(
                     : {}),
             },
             body: options.body === undefined ? undefined : JSON.stringify(options.body),
-            signal: AbortSignal.timeout(5_000),
+            signal: AbortSignal.timeout(options.timeoutMs ?? 5_000),
             cache: 'no-store',
         })
         const text = await response.text()
@@ -252,6 +253,22 @@ export async function refreshSession(
     if (!tokens || tokens.status >= 500) return 'unavailable'
     if (!tokens.data) return 'ended'
     return toSession(tokens.data, (await account(config, tokens.data.accessToken)) ?? session.account)
+}
+
+/**
+ * Whether the session of this access token is still on: the token alone stays
+ * valid after its session ended. False only when id-api says so; on anything
+ * else (an older id-api's 404, a 5xx, no answer within 1 s) the page goes on
+ * by its token.
+ */
+export async function sessionActive(config: Sso, session: SiteSession) {
+    const answer = await idApi<{
+        active: boolean
+    }>(config, '/api/v1/me/session', {
+        token: session.accessToken,
+        timeoutMs: 1_000,
+    })
+    return answer?.data?.active !== false
 }
 
 /** Ends this site's session at id-api; signing out here works even when id-api does not answer. */

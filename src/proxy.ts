@@ -16,6 +16,7 @@ import {
     refreshSession,
     SESSION_MAX_AGE,
     sealSession,
+    sessionActive,
     sso,
 } from '@/lib/sso/sso'
 
@@ -99,14 +100,17 @@ type AccountStep = {
  * This site's session before the page renders: refreshed when its access
  * token is about to expire (the new cookie goes to the page and the browser),
  * dropped when id-api refuses it, and ended when the hint of id-web is gone
- * (signed out there or on any site: sign-out is for the whole account).
- * Without a session, a hinted page visit goes through silent sign-in.
+ * (signed out there or on any site: sign-out is for the whole account). A page
+ * visit with no refresh due asks id-api whether the session is still on, and
+ * drops it when not. Without a session, a hinted page visit goes through silent
+ * sign-in.
  */
 async function keepAccount(request: NextRequest): Promise<AccountStep | undefined> {
     if (!sso) return undefined
     const name = cookieNames().session
     const hinted = request.cookies.has(HINT_COOKIE)
     const sealed = request.cookies.get(name)?.value
+    const pageVisit = isPageVisit(request.method, request.headers)
     let session = sealed ? openSession(sso, sealed) : undefined
     const writes: ((response: NextResponse) => void)[] = []
     const drop = () => {
@@ -128,7 +132,7 @@ async function keepAccount(request: NextRequest): Promise<AccountStep | undefine
             session = refreshed
             writes.push(response => response.cookies.set(name, value, cookieOptions(SESSION_MAX_AGE)))
         }
-    }
+    } else if (session && pageVisit && !(await sessionActive(sso, session))) drop()
 
     const apply = (response: NextResponse) => {
         for (const write of writes) write(response)
@@ -140,7 +144,7 @@ async function keepAccount(request: NextRequest): Promise<AccountStep | undefine
             hinted,
             mark: request.cookies.get(SILENT_COOKIE)?.value,
             pathname,
-            pageVisit: isPageVisit(request.method, request.headers),
+            pageVisit,
         })
     ) {
         const target = new URL('/auth/sign-in', request.nextUrl)
