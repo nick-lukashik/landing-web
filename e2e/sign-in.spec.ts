@@ -12,56 +12,67 @@ test.use({
     baseURL: SSO_URL,
 })
 
-/** "Signed in at id-web" as `email` (the mock reads this cookie), with the hint id-web sets beside it. */
-async function signedInAtId(context: BrowserContext, email: string, { hint = true } = {}) {
-    await context.addCookies([
+/** The person the mock account site signs in at /login. */
+const signsInAs = (context: BrowserContext, email: string) =>
+    context.addCookies([
         {
-            name: 'id_session',
+            name: 'e2e_email',
             value: encodeURIComponent(email),
             url: ID_URL,
         },
-        ...(hint
-            ? [
-                  {
-                      name: 'nl_hint',
-                      value: '1',
-                      url: SSO_URL,
-                      httpOnly: true,
-                  },
-              ]
-            : []),
     ])
+
+/** Signed in at the account site, and on the main page of this one. */
+async function signedIn(page: Page, context: BrowserContext, email: string) {
+    await signsInAs(context, email)
+    await page.goto(`${ID_URL}/login?continue=${encodeURIComponent(`${SSO_URL}/?lang=en`)}`)
+    await expect(page).toHaveURL(`${SSO_URL}/?lang=en`)
 }
 
 const header = (page: Page) => page.getByRole('banner')
+const signInLink = (page: Page) =>
+    header(page).getByRole('link', {
+        name: en.nav.signIn,
+    })
+const signOutButton = (page: Page) =>
+    header(page).getByRole('button', {
+        name: en.nav.signOut,
+    })
+const sessionCookie = async (context: BrowserContext) =>
+    (await context.cookies(SSO_URL)).find(cookie => cookie.name === 'nl_session')
 
 async function sessionsAt(page: Page, email: string) {
     const response = await page.request.get(`${ID_URL}/test/sessions?email=${encodeURIComponent(email)}`)
     return (await response.json()) as {
-        refresh: number
         live: number
-        checks: number
+        me: number
+        refreshes: number
     }
 }
 
-test.describe('sign-in through the account site', () => {
-    test('"Sign in" signs in here and comes back to the page', async ({ page, context }) => {
-        const email = `e2e-${randomUUID()}@example.com`
-        await page.goto('/?lang=en')
-        await signedInAtId(context, email, {
-            hint: false,
-        })
-        await header(page)
-            .getByRole('link', {
-                name: en.nav.signIn,
-            })
-            .click()
-        await expect(header(page).getByText(email)).toBeVisible()
-        await expect(page).toHaveURL(`${SSO_URL}/`)
+const revoke = (page: Page, email: string) =>
+    page.request.post(`${ID_URL}/test/revoke`, {
+        data: {
+            email,
+        },
+    })
 
-        const cookies = await context.cookies(SSO_URL)
-        const session = cookies.find(cookie => cookie.name === 'site_session')
-        expect(session).toMatchObject({
+test.describe('the account of the shared session cookie', () => {
+    test('"Sign in" goes to the account site and comes back signed in; "Sign out" ends it', async ({
+        page,
+        context,
+    }) => {
+        const email = `e2e-${randomUUID()}@example.com`
+        await signsInAs(context, email)
+        await page.goto('/privacy?lang=en')
+        await expect(signInLink(page)).toHaveAttribute(
+            'href',
+            `${ID_URL}/login?continue=${encodeURIComponent(`${SSO_URL}/privacy`)}`,
+        )
+        await signInLink(page).click()
+        await expect(header(page).getByText(email)).toBeVisible()
+        await expect(page).toHaveURL(`${SSO_URL}/privacy`)
+        expect(await sessionCookie(context)).toMatchObject({
             httpOnly: true,
             sameSite: 'Lax',
         })
@@ -79,187 +90,34 @@ test.describe('sign-in through the account site', () => {
             .analyze()
         expect(results.violations).toEqual([])
 
-        await header(page)
-            .getByRole('button', {
-                name: en.nav.signOut,
-            })
-            .click()
-        await expect(
-            header(page).getByRole('link', {
-                name: en.nav.signIn,
-            }),
-        ).toBeVisible()
+        await signOutButton(page).click()
+        await expect(signInLink(page)).toBeVisible()
         expect((await sessionsAt(page, email)).live).toBe(0)
-        // Signed out of the account site too: the way back went through its /logout.
-        expect((await context.cookies(ID_URL)).find(cookie => cookie.name === 'id_session')).toBeUndefined()
+        expect(await sessionCookie(context)).toBeUndefined()
     })
 
-    test('a visitor signed in at the account site is signed in here without a click', async ({ page, context }) => {
+    test('the header shows the name, with the email for the title', async ({ page, context }) => {
         const email = `named-${randomUUID()}@example.com`
-        await signedInAtId(context, email)
-        await page.goto('/?lang=en')
-        await expect(header(page).getByText('Named Person')).toBeVisible()
-        await expect(page).toHaveURL(`${SSO_URL}/?lang=en`)
-
-        // Signed out at the account site (the hint is gone): the session ends here too.
-        await context.clearCookies({
-            name: 'nl_hint',
+        await signedIn(page, context, email)
+        const link = header(page).getByRole('link', {
+            name: 'Named Person',
         })
-        await page.reload()
-        await expect(
-            header(page).getByRole('link', {
-                name: en.nav.signIn,
-            }),
-        ).toBeVisible()
-        expect((await sessionsAt(page, email)).live).toBe(0)
+        await expect(link).toHaveAttribute('href', `${ID_URL}/account`)
+        await expect(link).toHaveAttribute('title', new RegExp(email))
     })
 
-    test('silent sign-in tries once and never loops', async ({ page, context }) => {
-        // A hint, but no session at the account site: login_required.
-        await context.addCookies([
-            {
-                name: 'nl_hint',
-                value: '1',
-                url: SSO_URL,
-            },
-        ])
-        const visits: string[] = []
-        page.on('request', request => {
-            if (request.isNavigationRequest()) visits.push(new URL(request.url()).pathname)
-        })
-        await page.goto('/?lang=en')
-        await expect(
-            header(page).getByRole('link', {
-                name: en.nav.signIn,
-            }),
-        ).toBeVisible()
-        expect(visits.filter(path => path === '/auth/sign-in')).toHaveLength(1)
-        await page.reload()
-        expect(visits.filter(path => path === '/auth/sign-in')).toHaveLength(1)
-    })
-
-    test('"Sign out" here signs out of the account site too, so nothing signs the person back in', async ({
-        page,
-        context,
-    }) => {
+    test('a page load makes one call, a prefetch or a router fetch none', async ({ page, context }) => {
         const email = `e2e-${randomUUID()}@example.com`
-        await signedInAtId(context, email)
-        await page.goto('/?lang=en')
-        await expect(header(page).getByText(email)).toBeVisible()
-        await header(page)
-            .getByRole('button', {
-                name: en.nav.signOut,
-            })
-            .click()
-        await expect(page).toHaveURL(`${SSO_URL}/`)
-        await page.reload()
-        await expect(
-            header(page).getByRole('link', {
-                name: en.nav.signIn,
-            }),
-        ).toBeVisible()
-        const names = (await context.cookies()).map(cookie => cookie.name)
-        expect(names).not.toContain('nl_hint')
-        expect(names).not.toContain('id_session')
-    })
-
-    test('a session the person asked for ends too when the account site signs out', async ({ page, context }) => {
-        const email = `e2e-${randomUUID()}@example.com`
-        await signedInAtId(context, email)
-        await page.goto('/auth/sign-in?returnTo=%2F%3Flang%3Den')
-        await expect(header(page).getByText(email)).toBeVisible()
-        await context.clearCookies({
-            name: 'nl_hint',
-        })
-        await page.reload()
-        await expect(
-            header(page).getByRole('link', {
-                name: en.nav.signIn,
-            }),
-        ).toBeVisible()
-        expect((await sessionsAt(page, email)).live).toBe(0)
-    })
-
-    test('an expiring token is refreshed before the page, a revoked session ends', async ({ page, context }) => {
-        const email = `short-${randomUUID()}@example.com`
-        await signedInAtId(context, email)
-        await page.goto('/auth/sign-in?returnTo=%2F%3Flang%3Den')
-        await expect(header(page).getByText(email)).toBeVisible()
-        const before = (await sessionsAt(page, email)).refresh
-        await page.reload()
-        await expect(header(page).getByText(email)).toBeVisible()
-        expect((await sessionsAt(page, email)).refresh).toBeGreaterThan(before)
-
-        // Signed out everywhere from another device: this site's session and the
-        // account site's session of this browser are both gone.
-        await page.request.post(`${ID_URL}/test/revoke`, {
-            data: {
-                email,
-            },
-        })
-        await context.clearCookies({
-            name: 'id_session',
-        })
-        await page.reload()
-        await expect(
-            header(page).getByRole('link', {
-                name: en.nav.signIn,
-            }),
-        ).toBeVisible()
-    })
-
-    test('a session ended at the account site is signed out at the next page load', async ({ page, context }) => {
-        const email = `e2e-${randomUUID()}@example.com`
-        await signedInAtId(context, email)
-        await page.goto('/?lang=en')
-        await expect(header(page).getByText(email)).toBeVisible()
-
-        // Minutes left on the token and the hint still here: only the check can tell.
-        await page.request.post(`${ID_URL}/test/revoke`, {
-            data: {
-                email,
-            },
-        })
-        await context.clearCookies({
-            name: 'id_session',
-        })
-        await page.reload()
-        await expect(
-            header(page).getByRole('link', {
-                name: en.nav.signIn,
-            }),
-        ).toBeVisible()
-        const names = (await context.cookies(SSO_URL)).map(cookie => cookie.name)
-        expect(names).not.toContain('site_session')
-        expect(names).toContain('nl_hint')
-        expect((await sessionsAt(page, email)).live).toBe(0)
-    })
-
-    test('a check that gets a 503 leaves the visitor signed in', async ({ page, context }) => {
-        const email = `down-${randomUUID()}@example.com`
-        await signedInAtId(context, email)
-        await page.goto('/?lang=en')
-        await expect(header(page).getByText(email)).toBeVisible()
-        const { checks } = await sessionsAt(page, email)
-        await page.reload()
-        await expect(header(page).getByText(email)).toBeVisible()
-        expect((await sessionsAt(page, email)).checks).toBe(checks + 1)
-        expect((await context.cookies(SSO_URL)).map(cookie => cookie.name)).toContain('site_session')
-    })
-
-    test('a page load makes one check, a prefetch or a router fetch none', async ({ page, context }) => {
-        const email = `e2e-${randomUUID()}@example.com`
-        await signedInAtId(context, email)
-        await page.goto('/?lang=en')
+        await signedIn(page, context, email)
         await expect(header(page).getByText(email)).toBeVisible()
         const routerFetches: string[] = []
         page.on('request', request => {
             if (request.headers().rsc) routerFetches.push(request.url())
         })
-        const { checks } = await sessionsAt(page, email)
+        const { me } = await sessionsAt(page, email)
         await page.reload()
         await expect(header(page).getByText(email)).toBeVisible()
-        expect((await sessionsAt(page, email)).checks).toBe(checks + 1)
+        expect((await sessionsAt(page, email)).me).toBe(me + 1)
 
         // A prefetch of the document: a page load in all but its purpose.
         const prefetch = await page.request.get('/?lang=en', {
@@ -271,7 +129,7 @@ test.describe('sign-in through the account site', () => {
             },
         })
         expect(prefetch.ok()).toBe(true)
-        expect((await sessionsAt(page, email)).checks).toBe(checks + 1)
+        expect((await sessionsAt(page, email)).me).toBe(me + 1)
 
         await page
             .getByRole('contentinfo')
@@ -287,31 +145,92 @@ test.describe('sign-in through the account site', () => {
             }),
         ).toBeVisible()
         expect(routerFetches).not.toEqual([])
-        expect((await sessionsAt(page, email)).checks).toBe(checks + 1)
+        expect((await sessionsAt(page, email)).me).toBe(me + 1)
+        await expect(header(page).getByText(email)).toBeVisible()
     })
 
-    test('a cancelled sign-in explains itself and offers another try', async ({ page, context }) => {
-        await signedInAtId(context, 'deny', {
-            hint: false,
-        })
-        await page.goto('/auth/sign-in?returnTo=%2F')
-        await expect(page).toHaveURL(/\/auth\/error\?reason=denied$/)
-        await expect(page.getByText(en.authError.reasons.denied)).toBeVisible()
-        await expect(
-            page.getByRole('link', {
-                name: en.authError.retry,
-            }),
-        ).toBeVisible()
+    test('an expiring token is refreshed before the page, once', async ({ page, context }) => {
+        const email = `short-${randomUUID()}@example.com`
+        await signedIn(page, context, email)
+        await expect(header(page).getByText(email)).toBeVisible()
+        const first = await sessionCookie(context)
+        expect((await sessionsAt(page, email)).refreshes).toBe(1)
+        expect(first?.expires).toBeGreaterThan(Date.now() / 1000 + 86_400)
+
+        await page.reload()
+        await expect(header(page).getByText(email)).toBeVisible()
+        expect((await sessionsAt(page, email)).refreshes).toBe(2)
+        expect((await sessionCookie(context))?.value).not.toBe(first?.value)
     })
 
-    test('a callback this browser did not start signs nobody in', async ({ page }) => {
-        await page.goto('/auth/callback?code=x&state=forged')
-        await expect(page).toHaveURL(/\/auth\/error\?reason=state$/)
-        await page.goto('/?lang=en')
+    test('a refresh id-api refuses signs out at once', async ({ page, context }) => {
+        const email = `short-${randomUUID()}@example.com`
+        await signedIn(page, context, email)
+        await revoke(page, email)
+        await page.reload()
+        await expect(signInLink(page)).toBeVisible()
+        expect(await sessionCookie(context)).toBeUndefined()
+    })
+
+    test('a session ended elsewhere is signed out at the next page load', async ({ page, context }) => {
+        const email = `e2e-${randomUUID()}@example.com`
+        await signedIn(page, context, email)
+        await expect(header(page).getByText(email)).toBeVisible()
+
+        // Minutes left on the token: only the answer of id-api can tell.
+        await revoke(page, email)
+        await page.reload()
+        await expect(signInLink(page)).toBeVisible()
+        expect(await sessionCookie(context)).toBeUndefined()
+    })
+
+    test('id-api not answering leaves the person signed in, as "Account"', async ({ page, context }) => {
+        const email = `down-${randomUUID()}@example.com`
+        await signedIn(page, context, email)
         await expect(
             header(page).getByRole('link', {
-                name: en.nav.signIn,
+                name: en.nav.account,
             }),
         ).toBeVisible()
+        await expect(signOutButton(page)).toBeVisible()
+        expect(await sessionCookie(context)).toBeDefined()
+    })
+
+    test('a sign-out id-api could not do says so and keeps the session', async ({ page, context }) => {
+        const email = `fail-${randomUUID()}@example.com`
+        await signedIn(page, context, email)
+        await signOutButton(page).click()
+        await expect(page).toHaveURL(`${SSO_URL}/auth/error`)
+        await expect(page.getByText(en.authError.body)).toBeVisible()
+        expect(await sessionCookie(context)).toBeDefined()
+        expect((await sessionsAt(page, email)).live).toBe(1)
+        await expect(signOutButton(page)).toBeVisible()
+    })
+
+    test('the browser cannot say who the person is', async ({ page }) => {
+        const response = await page.request.get('/?lang=en', {
+            headers: {
+                'x-nl-account': encodeURIComponent(
+                    JSON.stringify({
+                        name: 'Forged Person',
+                        email: null,
+                    }),
+                ),
+            },
+        })
+        expect(await response.text()).not.toContain('Forged Person')
+    })
+
+    test('a sign-out from another origin does nothing', async ({ page, context }) => {
+        const email = `e2e-${randomUUID()}@example.com`
+        await signedIn(page, context, email)
+        const response = await page.request.post('/auth/sign-out', {
+            headers: {
+                origin: 'https://elsewhere.example',
+            },
+            maxRedirects: 0,
+        })
+        expect(response.status()).toBe(403)
+        expect((await sessionsAt(page, email)).live).toBe(1)
     })
 })

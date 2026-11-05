@@ -31,10 +31,10 @@ const schema = z
                 .default('info'),
         ),
         /**
-         * Sign-in through the account site. Public origin of id-web
-         * (https://id.nick-lukashik.com), id-api inside the cluster, and the key
-         * of this site's own sealed session cookie. Without all three the site
-         * has no accounts: no sign-in link, the /auth routes answer 404.
+         * The account. Public origin of id-web (https://id.nick-lukashik.com),
+         * id-api inside the cluster, and the key of the session cookie every site
+         * under the domain shares: the same value as id-web's. Without all three
+         * the site has no accounts: no sign-in link, the /auth routes answer 404.
          */
         ID_URL: unsetIfBlank(z.url().optional()),
         ID_API_URL: unsetIfBlank(z.url().optional()),

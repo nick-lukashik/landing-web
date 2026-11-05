@@ -13,7 +13,7 @@ import { serverEnv } from '@/lib/env/server'
 import { NONCE_HEADER } from '@/lib/security/csp'
 import { CANONICAL_HEADER, languageAlternates, localizedPath, PATHNAME_HEADER } from '@/lib/seo/alternates'
 import { baseOpenGraph } from '@/lib/seo/metadata'
-import { cookieNames, openSession, sso } from '@/lib/sso/sso'
+import { ACCOUNT_HEADER, type Account, accounts } from '@/lib/session/session'
 import './globals.css'
 
 /**
@@ -97,10 +97,9 @@ export default async function RootLayout({ children }: LayoutProps<'/'>) {
     ])
     const nonce = requestHeaders.get(NONCE_HEADER) ?? undefined
     const site = serverEnv.SITE_URL
-    // The proxy has refreshed the session already; undefined while the site has no accounts.
-    const account = sso
-        ? (openSession(sso, (await cookies()).get(cookieNames().session)?.value)?.account ?? null)
-        : undefined
+    // What the proxy found; null when nobody is signed in, undefined while the site has no accounts.
+    const person = requestHeaders.get(ACCOUNT_HEADER)
+    const account = accounts ? (person ? (JSON.parse(decodeURIComponent(person)) as Account) : null) : undefined
 
     return (
         <html lang={locale}>
@@ -115,7 +114,8 @@ export default async function RootLayout({ children }: LayoutProps<'/'>) {
                     <SiteHeader
                         languageNames={names}
                         account={account}
-                        accountUrl={sso ? `${sso.idUrl}/account` : undefined}
+                        accountSite={accounts?.idUrl}
+                        site={site}
                     />
                     <main
                         id="main"

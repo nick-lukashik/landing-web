@@ -55,7 +55,7 @@ Partial Prefetching skills do not fit this project (nonce CSP, see below).
   - `connect-src` is same-origin: browser code may only call `/api/*`. With `GTM_ID` set it also allows Google's
     hosts, for Tag Manager and Google Analytics only (`ANALYTICS_HOSTS` in `src/lib/security/csp.ts`).
   - The CSP header belongs only in the proxy. The static security headers stay in `next.config.ts` `headers()`.
-- Data path: the browser calls no backend. With accounts on, the proxy and `src/lib/sso/` call id-api at `ID_API_URL`
+- Data path: the browser calls no backend. With accounts on, the proxy and `src/lib/session/` call id-api at `ID_API_URL`
   on the server. Never expose that address or call it from client code.
 - Env: read `process.env` only in `src/lib/env/` (exceptions: `src/proxy.ts` and `src/instrumentation.ts` read
   `APP_VERSION`, `NODE_ENV`, `NEXT_RUNTIME`, because `server-only` modules cannot load there). Next inlines
