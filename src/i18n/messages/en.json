@@ -107,11 +107,11 @@
                 "title": "What is collected and why",
                 "items": [
                     "Account: your email address, an optional display name and your language, to sign you in and to write to you about your account.",
-                    "Sign-in: one-time email codes, stored only as a keyed hash and valid for ten minutes. With Google sign-in: your Google account ID, email address and name. With a passkey: its public key, its ID and a name such as “Chrome on macOS”. Your fingerprint or face never leaves your device.",
+                    "Sign-in: one-time email codes, stored only as a keyed hash and valid for ten minutes. The email address a code was requested for is kept with it, readable, also when no account exists yet. With Google sign-in: your Google account ID, email address and name. With a passkey: its public key, its ID, a name such as “Chrome on macOS”, technical details of the authenticator (its model ID, transports, backup state and use counter), and when it was added and last used. Your fingerprint or face never leaves your device.",
                     "Sessions: for each one, the browser and operating system, the IP address, how you signed in, and the time of sign-in and of last activity, to protect the account and to show you where you are signed in.",
                     "Wallet and payments: your coin balance and its history, and for each payment the pack, the amount, the currency, the status and the payment provider’s reference. Card details are entered on the provider’s page and never reach this platform.",
-                    "Notifications: the messages in your account inbox and the emails sent to you (sign-in codes, receipts).",
-                    "This website: no analytics, no advertising, no tracking. Server logs with IP addresses are kept for 30 days for security and troubleshooting."
+                    "Notifications: the messages in your account inbox and the emails sent to you (sign-in codes, a welcome message, receipts).",
+                    "These sites: statistics of visits through Google Analytics (see “Who else processes data”) and no advertising. Server logs with IP addresses are kept for 30 days for security and troubleshooting."
                 ]
             },
             {
@@ -120,7 +120,7 @@
                     "locale: your language, kept for one year.",
                     "__Host-id_session at id.nick-lukashik.com and __Host-site_session at nick-lukashik.com: your session, encrypted. They are HttpOnly, so scripts cannot read them, and live for thirty days.",
                     "__Host-id_login, __Host-id_google and __Host-site_sso: a sign-in in progress. They live for ten minutes and are deleted when sign-in is complete.",
-                    "__Host-id_passkey at id.nick-lukashik.com: the name of the passkey last used in this browser (such as “Chrome on macOS”), encrypted, so the sign-in page can offer it straight away. Kept for one year, also after you sign out, and deleted along with that passkey.",
+                    "__Host-id_passkey at id.nick-lukashik.com: the ID and the name of the passkey last used in this browser (such as “Chrome on macOS”), encrypted, so the sign-in page can offer it straight away. Kept for one year, also after you sign out. It goes when you remove that passkey in this browser, or when a sign-in finds that the passkey no longer exists.",
                     "nl_hint: a note that this browser is signed in at id.nick-lukashik.com, set for the whole nick-lukashik.com domain, so this site can let you in without signing in again. It holds no personal data, just “1”, and goes away when you sign out there.",
                     "site_silent: this site’s note about automatic sign-in, just “tried”: kept for five minutes after an attempt (a day if it failed in a way that would repeat), so the site does not try again on every page. It is deleted when you sign in.",
                     "Cloudflare, which delivers the sites, may set its own security cookies such as __cf_bm to tell people from bots.",
@@ -135,8 +135,9 @@
                     "The hosting provider of the server the platform runs on.",
                     "Cloudflare: every request passes through its network, which protects and delivers the sites. It also runs the domain name system and stores encrypted backups.",
                     "Google: only if you choose to sign in with Google. It shares your account ID, email address, whether the email is verified, and your name.",
-                    "An email delivery service, for sign-in codes and receipts.",
+                    "An email delivery service, for sign-in codes, welcome messages and receipts.",
                     "Google Analytics, through Google Tag Manager: statistics of visits to the sites from the first visit. Google receives the time of the visit, the pages, where you came from, your device, your approximate location and your IP address. You can turn it off.",
+                    "Telegram: a daily summary of those statistics goes to the site owner’s private group. It has the number of visitors and pages viewed, the pages and where visitors came from, and for visits from a marked link also the time, source, campaign, city, country, device and length of the visit. It has no names, email addresses or IP addresses.",
                     "A payment provider: takes payments, once there are any."
                 ]
             },
@@ -144,6 +145,7 @@
                 "title": "How long it is kept",
                 "items": [
                     "Account data stays until you ask to delete the account.",
+                    "Inbox messages stay until the account is deleted. Your coin balance and its history count as payment records and stay after that too. Records of emails sent hold no address and no text, only a request or payment reference, the template and the status, and have no fixed deletion date yet.",
                     "Sign-in codes expire after ten minutes and are deleted after 24 hours. A session ends thirty days after its last activity at the latest; ended sessions are kept for 90 days to investigate misuse, then deleted.",
                     "Payment records are kept as long as accounting rules require.",
                     "Server logs: 30 days. Backups are encrypted and replaced on a rolling basis."
@@ -160,7 +162,7 @@
             {
                 "title": "Changes",
                 "items": [
-                    "If this policy changes in a meaningful way, signed-in users get a notice in the account inbox before the change takes effect."
+                    "If this policy changes in a meaningful way, this page and the date at the top are updated before the change takes effect."
                 ]
             }
         ]
@@ -184,7 +186,7 @@
                 "title": "Coins",
                 "items": [
                     "Coins are a virtual unit for the platform’s apps. They have no cash value: they cannot be withdrawn, exchanged for money or sent to another person.",
-                    "Packs: 100 coins for $1, 550 for $5 and 1200 for $10, or the price shown in rubles or euros. You pay the price you saw at checkout.",
+                    "Payments are not open yet. Once they are, the packs are 100 coins for $1, 550 for $5 and 1200 for $10, or the price shown in rubles or euros. You pay the price you saw at checkout.",
                     "Coins are credited once the payment provider confirms the payment. A purchase is final once the coins are credited, unless the law of your country gives you a right to a refund. If something went wrong with a payment, write to the contact below."
                 ]
             },
@@ -210,7 +212,7 @@
             {
                 "title": "Changes",
                 "items": [
-                    "If these terms change in a meaningful way, signed-in users get a notice in the account inbox before the change takes effect."
+                    "If these terms change in a meaningful way, this page and the date at the top are updated before the change takes effect."
                 ]
             }
         ]
