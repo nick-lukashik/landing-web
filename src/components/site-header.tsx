@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { type AppLocale } from '@/i18n/config'
-import { type Account } from '@/lib/sso/sso'
+import { type Account } from '@/lib/session/session'
 import { cn } from '@/lib/utils'
 import { LocaleSwitch } from './locale-switch'
 
@@ -19,18 +19,20 @@ const quiet =
     'inline-flex h-11 items-center rounded-md px-3 text-sm font-medium text-muted-foreground hover:text-foreground'
 
 /**
- * `account`: the person signed in here, null when nobody is, undefined while
- * the site has no accounts (no sign-in link then). Sign-in and sign-out are a
- * plain link and a plain form: both leave or reload the page anyway.
+ * `account`: the person signed in, null when nobody is, undefined while the site
+ * has no accounts (no sign-in link then). Sign-in is a plain link to the account
+ * site, back to this page; sign-out a plain form: both reload the page anyway.
  */
 export function SiteHeader({
     languageNames,
     account,
-    accountUrl,
+    accountSite,
+    site,
 }: {
     languageNames: Record<AppLocale, string>
     account?: Account | null
-    accountUrl?: string
+    accountSite?: string
+    site: string
 }) {
     const t = useTranslations('nav')
     const pathname = usePathname()
@@ -61,7 +63,7 @@ export function SiteHeader({
                 <div className="flex flex-wrap items-center gap-1">
                     {account === null ? (
                         <a
-                            href={`/auth/sign-in?returnTo=${encodeURIComponent(pathname)}`}
+                            href={`${accountSite}/login?continue=${encodeURIComponent(`${site}${pathname}`)}`}
                             rel="nofollow"
                             className={quiet}
                         >
@@ -70,13 +72,17 @@ export function SiteHeader({
                     ) : account ? (
                         <>
                             <a
-                                href={accountUrl}
+                                href={`${accountSite}/account`}
                                 className={quiet}
-                                title={t('signedInAs', {
-                                    name: account.email,
-                                })}
+                                title={
+                                    account.email
+                                        ? t('signedInAs', {
+                                              name: account.email,
+                                          })
+                                        : undefined
+                                }
                             >
-                                {account.name ?? account.email}
+                                {account.name ?? account.email ?? t('account')}
                             </a>
                             <form
                                 action="/auth/sign-out"

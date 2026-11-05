@@ -18,26 +18,20 @@ A new page: "Adding a page" in the starter's README, and its path in `src/app/si
 
 ## Accounts
 
-The site signs in through the account site (`id.nick-lukashik.com`), as the previous platform's landing did. It is off until `ID_URL`, `ID_API_URL` and `SESSION_SECRET` are set: then the header shows "Sign in", or the person and "Sign out". Without them nothing changes and `/auth/*` answers 404. The whole design: `docs/identity.md` in the org repo, flow 4.
+The account is one session cookie for every site under the domain. id-web signs in and sets it; this site reads it. It is off until `ID_URL`, `ID_API_URL` and `SESSION_SECRET` are set: then the header shows "Sign in", or the person and "Sign out". Without them nothing changes and `/auth/*` answers 404. The whole design: `docs/identity.md` in the org repo.
 
-| Route | What |
-|---|---|
-| `GET /auth/sign-in?returnTo=` | Seals state, PKCE verifier and the return path into `__Host-site_sso` (10 minutes) and sends the browser to `id.nick-lukashik.com/authorize` |
-| `GET /auth/callback` | Checks the state, exchanges the code at `id-api` (server to server) for this site's own session, back to the return path |
-| `POST /auth/sign-out` | Ends this site's session at `id-api`, then goes to id-web's `/logout`: the account site and every other site of the platform sign out too, and the browser comes back here |
-| `/auth/error` | A sign-in the person asked for did not work, and "Try again" |
-
-- **The session.** `__Host-site_session`: tokens and the name and email to show, sealed with AES-256-GCM under `SESSION_SECRET`, `HttpOnly`, 30 days. The proxy refreshes it with less than 60 s left and asks `id-api` for the name and email again then.
-- **A session ended elsewhere** stops at the next page visit, though its access token still works: with no refresh due the proxy asks `id-api` (`GET /api/v1/me/session`, 1 s) and drops the cookie on `active: false`. Any other answer, or none, leaves the page on its token.
-- **Silent sign-in** (`src/lib/sso/silent.ts`): signed in at the account site means signed in here, with no click. The account site keeps `nl_hint=1` on the parent domain while it is signed in. A page visit with the hint and no session here goes once through `/auth/sign-in?silent=1` (`prompt=none`: no page at the account site) and comes back signed in, or signed out without an error. Never for crawlers, prefetches or Lighthouse; at most once per 5 minutes (`site_silent=tried`).
-- **Sign-out is for the whole account.** "Sign out" here or on the account site signs out of every site in this browser: id-api ends the sessions signed in from the account site's session, and a session here ends as soon as the hint is gone.
-- Pages stay the same for everyone except the header, which reads the cookie.
+- **The cookie.** `__Secure-nl_session` on the registered domain (`nl_session` with no Domain on plain http): tokens sealed with AES-256-GCM under `SESSION_SECRET`, `HttpOnly`, `SameSite=Lax`, 30 days. It holds no name or email.
+- **Sign-in** is a link to `id.nick-lukashik.com/login?continue=<this page>`. id-web allows sites of the platform there and comes back with the cookie set. No code flow, no cookie of this site's own, no redirect in the background.
+- **A page visit** with the cookie makes one call: `GET /api/v1/me` (1 s) gives the name and email for the header and `active`, whether the session still stands. `active: false` drops the cookie; any other trouble leaves the person signed in, and the header says "Account". With less than 60 s left on the access token the proxy refreshes first (10 s, longer than id-api's 8 s deadline) and rewrites the cookie.
+- **No visit, no call.** A visitor without the cookie, a crawler, a prefetch or a router fetch asks id-api nothing.
+- **`POST /auth/sign-out`** ends the session at `id-api` and expires the cookie: signed out of every site in this browser, with one call and no redirect through the account site. If `id-api` does not answer the cookie stays, and `/auth/error` says so.
+- Pages stay the same for everyone except the header, which gets the person from the proxy.
 
 | Variable | What |
 |---|---|
 | `ID_URL` | Public origin of id-web, `https://id.nick-lukashik.com` |
 | `ID_API_URL` | id-api inside the cluster, `http://id-api.prod.svc` |
-| `SESSION_SECRET` | Key of this site's session cookie, 32+ characters, the same on every replica; its own, not id-web's |
+| `SESSION_SECRET` | Key of the session cookie, 32+ characters, the same on every site under the domain and every replica |
 
 ## Getting started
 

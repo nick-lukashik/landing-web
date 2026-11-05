@@ -10,7 +10,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # landing-web: rules for agents
 
-The site on nick-lukashik.com, made from `next-starter`: the main page, `/privacy`, `/terms` and sign-in through the account site (`/auth/*`), EN/RU, stock shadcn/ui. Stack: Next.js 16.4 (App Router, `output: 'standalone'`, React Compiler, typed routes), React 19.3, TypeScript 7 (strict), Node 26, pnpm 12, next-intl 4 (EN/RU, no locale in the URL), Zod 4, Tailwind 4, shadcn/ui (Radix), Pino, Biome, Vitest 5, Playwright 1.64 + axe. No database and no `/api` proxy of its own; with accounts on, `src/proxy.ts` and `src/lib/sso/` call id-api from the server.
+The site on nick-lukashik.com, made from `next-starter`: the main page, `/privacy`, `/terms` and the account of the shared session cookie (`/auth/*`), EN/RU, stock shadcn/ui. Stack: Next.js 16.4 (App Router, `output: 'standalone'`, React Compiler, typed routes), React 19.3, TypeScript 7 (strict), Node 26, pnpm 12, next-intl 4 (EN/RU, no locale in the URL), Zod 4, Tailwind 4, shadcn/ui (Radix), Pino, Biome, Vitest 5, Playwright 1.64 + axe. No database and no `/api` proxy of its own; with accounts on, `src/proxy.ts` and `src/lib/session/` call id-api from the server.
 
 ## Library rules
 
@@ -30,10 +30,10 @@ Read a library's file before working with it. The first line of each file names 
 
 ## Where things are
 
-- `src/proxy.ts`: every request but `/api/*` (reserved for the API proxy, see next-example) gets a request id and `x-app-version`; pages also get the nonce CSP, the locale (`?lang=` > cookie > English) and `x-pathname` for metadata. With accounts on, a page visit also keeps the session fresh, asks id-api whether it still stands, and starts silent sign-in.
-- `src/app/`: routes. `layout.tsx` holds shared metadata and JSON-LD (`WebSite`, `Person`); `page.tsx` is the main page, `privacy/` and `terms/` the legal texts, `auth/` sign-in and sign-out; `health/live` and `health/ready` are the probes.
+- `src/proxy.ts`: every request but `/api/*` (reserved for the API proxy, see next-example) gets a request id and `x-app-version`; pages also get the nonce CSP, the locale (`?lang=` > cookie > English) and `x-pathname` for metadata. With accounts on, a page visit with the session cookie also keeps it fresh and asks id-api once who the person is and whether the session still stands.
+- `src/app/`: routes. `layout.tsx` holds shared metadata and JSON-LD (`WebSite`, `Person`); `page.tsx` is the main page, `privacy/` and `terms/` the legal texts, `auth/` sign-out; `health/live` and `health/ready` are the probes.
 - `src/lib/contacts.ts`: the owner's public profiles (page, footer, JSON-LD).
-- `src/lib/sso/`: sign-in through the account site: the sealed session cookie, the calls to id-api, silent sign-in ("Accounts" in the README).
+- `src/lib/session/`: the sealed session cookie shared with the account site, and the calls to id-api ("Accounts" in the README).
 - `src/lib/env/`: env through Zod, `server.ts` (server only, read at startup). No `NEXT_PUBLIC_*`: one image runs on stage and prod, so nothing environment-specific is inlined at build time (`ROBOTS` is runtime env too).
 - `src/lib/security/`: CSP and static headers. `src/lib/seo/`: alternates, robots, Open Graph.
 - `src/i18n/`: locales, locale resolution, next-intl config, catalogs `messages/{en,ru}.json`.

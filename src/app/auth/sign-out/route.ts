@@ -1,29 +1,39 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { serverEnv } from '@/lib/env/server'
-import { off } from '@/lib/sso/respond'
-import { cookieNames, endSession, expiredCookie, openSession, sso } from '@/lib/sso/sso'
+import { accounts, cookieName, endSession, expiredSessionCookie, openSession } from '@/lib/session/session'
 
 export const dynamic = 'force-dynamic'
 
+/** A redirect to a path of this site (303: the next request is a GET). Never stored by a cache. */
+function to(path: string) {
+    const response = NextResponse.redirect(new URL(path, serverEnv.SITE_URL), 303)
+    response.headers.set('cache-control', 'private, no-store')
+    return response
+}
+
 /**
- * "Sign out" (a POST from the header's form) signs out of the whole account
- * in this browser: this site's session ends at id-api and its cookie goes,
- * then the browser goes to id-web's /logout, which ends the session there
- * and every site's session signed in from it, and comes back to the main page.
+ * "Sign out" (a POST from the header's form) signs out of the whole account: the
+ * session ends at id-api and the cookie goes, for every site under the domain. When
+ * id-api could not end it the cookie stays and the person is told: a page saying
+ * "signed out" over a session that is still alive would be a lie.
  */
 export async function POST(request: NextRequest) {
-    if (!sso) return off()
+    if (!accounts)
+        return new NextResponse(null, {
+            status: 404,
+            headers: {
+                'cache-control': 'private, no-store',
+            },
+        })
     const origin = request.headers.get('origin')
     if (origin && origin !== new URL(serverEnv.SITE_URL).origin)
         return new NextResponse(null, {
             status: 403,
         })
-    const name = cookieNames().session
-    await endSession(sso, openSession(sso, request.cookies.get(name)?.value))
-    const target = new URL('/logout', sso.idUrl)
-    target.searchParams.set('return', `${serverEnv.SITE_URL}/`)
-    const response = NextResponse.redirect(target, 303)
-    response.headers.set('cache-control', 'private, no-store')
-    response.cookies.set(name, '', expiredCookie())
+    const name = cookieName()
+    const session = openSession(accounts, request.cookies.get(name)?.value)
+    if (session && !(await endSession(accounts, session))) return to('/auth/error')
+    const response = to('/')
+    response.cookies.set(name, '', expiredSessionCookie())
     return response
 }

@@ -7,6 +7,8 @@ import { HTTPS_COOKIES_PORT, ID_PORT, NOINDEX_PORT, SITE_PORT, SSO_PORT } from '
 // running site instead (the sign-in tests skip then).
 const external = process.env.PW_BASE_URL
 const baseURL = external ?? `http://127.0.0.1:${SITE_PORT}`
+// Test only: the sealed cookie of this run, shared by the mock account site and the site.
+const SESSION_SECRET = 'e2e-site-session-secret-0123456789abcdef'
 const site = (port: number, env: Record<string, string>) => ({
     // The same server.js the container runs.
     command: 'node scripts/start-standalone.mjs',
@@ -77,23 +79,25 @@ export default defineConfig({
                   url: `http://127.0.0.1:${ID_PORT}/health`,
                   env: {
                       PORT: String(ID_PORT),
+                      SESSION_SECRET,
                   },
                   reuseExistingServer: false,
                   timeout: 30_000,
               },
+              // As prod: accounts and the tag manager, whose consent re-renders the header.
               site(SSO_PORT, {
                   ROBOTS: 'index',
+                  GTM_ID: 'GTM-E2ETEST',
                   ID_URL: `http://127.0.0.1:${ID_PORT}`,
                   ID_API_URL: `http://127.0.0.1:${ID_PORT}`,
-                  // Test only: the sealed cookies of this run.
-                  SESSION_SECRET: 'e2e-site-session-secret-0123456789abcdef',
+                  SESSION_SECRET,
               }),
               site(HTTPS_COOKIES_PORT, {
                   ROBOTS: 'index',
                   SITE_URL: `https://localhost:${HTTPS_COOKIES_PORT}`,
                   ID_URL: `http://127.0.0.1:${ID_PORT}`,
                   ID_API_URL: `http://127.0.0.1:${ID_PORT}`,
-                  SESSION_SECRET: 'e2e-site-session-secret-0123456789abcdef',
+                  SESSION_SECRET,
               }),
           ],
 })
