@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
+import { AnalyticsSettings } from '@/components/analytics-consent'
 import { contacts } from '@/lib/contacts'
 import { serverEnv } from '@/lib/env/server'
 
@@ -45,6 +46,11 @@ export async function SiteFooter() {
                                 {t('terms.title')}
                             </Link>
                         </li>
+                        {serverEnv.GTM_ID ? (
+                            <li>
+                                <AnalyticsSettings />
+                            </li>
+                        ) : null}
                     </ul>
                 </nav>
                 <p>

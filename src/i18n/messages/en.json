@@ -125,6 +125,7 @@
                     "site_silent: this site’s note about automatic sign-in, just “tried”: kept for five minutes after an attempt (a day if it failed in a way that would repeat), so the site does not try again on every page. It is deleted when you sign in.",
                     "Cloudflare, which delivers the sites, may set its own security cookies such as __cf_bm to tell people from bots.",
                     "_ga and _ga_*: cookies of Google Analytics, two years. Only if you agreed to statistics.",
+                    "nl_consent: your answer about statistics, for the whole nick-lukashik.com domain, kept for one year.",
                     "All of them but the statistics cookies are needed for the sites to work, so those need no consent."
                 ]
             },
@@ -135,7 +136,7 @@
                     "Cloudflare: every request passes through its network, which protects and delivers the sites. It also runs the domain name system and stores encrypted backups.",
                     "Google: only if you choose to sign in with Google. It shares your account ID, email address, whether the email is verified, and your name.",
                     "An email delivery service, for sign-in codes and receipts.",
-                    "Google Analytics, through Google Tag Manager: statistics of visits to the sites. Until you agree, Google gets no cookie and no identifier.",
+                    "Google Analytics, through Google Tag Manager: statistics of visits to the sites. Only if you agreed: until then nothing is loaded from Google.",
                     "A payment provider: takes payments, once there are any."
                 ]
             },
@@ -152,6 +153,7 @@
                 "title": "Your choices",
                 "items": [
                     "Change your name and language, add or remove passkeys, link or unlink Google and end sessions in your account at id.nick-lukashik.com.",
+                    "You can accept or decline statistics in the banner, and change your answer with “Cookie settings” at the bottom of any page. After a refusal the Google Analytics cookies are deleted.",
                     "To get a copy of your data or to delete your account, write to the contact below."
                 ]
             },
@@ -212,5 +214,13 @@
                 ]
             }
         ]
+    },
+    "consent": {
+        "label": "Statistics cookies",
+        "text": "We count visits with Google Analytics. It sets cookies and sends Google data about your visit. Only if you agree: until then nothing is loaded from Google.",
+        "more": "Privacy policy",
+        "accept": "Accept",
+        "decline": "Decline",
+        "settings": "Cookie settings"
     }
 }
