@@ -83,6 +83,30 @@ describe('the session cookie', () => {
     })
 })
 
+describe('the account header', () => {
+    it('reads back what the proxy writes', async () => {
+        const { accountFromHeader, accountHeader } = await load()
+        const account = {
+            name: 'Имя; "с" кавычками',
+            email: null,
+        }
+        expect(accountFromHeader(accountHeader(account))).toEqual(account)
+    })
+
+    it('is nobody when it is not what the proxy writes', async () => {
+        const { accountFromHeader } = await load()
+        for (const value of [
+            null,
+            '',
+            '%',
+            'not-json',
+            encodeURIComponent('{"name":{"a":1},"email":null}'),
+            encodeURIComponent('[]'),
+        ])
+            expect(accountFromHeader(value)).toBeNull()
+    })
+})
+
 describe('refreshSession', () => {
     it('gives the new tokens', async () => {
         const { config, refreshSession } = await load()
@@ -105,6 +129,8 @@ describe('refreshSession', () => {
         idApi(401)
         expect(await refreshSession(config, session)).toBe('ended')
         idApi(503)
+        expect(await refreshSession(config, session)).toBe('unavailable')
+        idApi(429)
         expect(await refreshSession(config, session)).toBe('unavailable')
         vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('timeout')))
         expect(await refreshSession(config, session)).toBe('unavailable')
@@ -165,18 +191,26 @@ describe('endSession', () => {
     })
 })
 
-describe('isPageVisit', () => {
+describe('showsHeader', () => {
     const page = {
         'sec-fetch-mode': 'navigate',
         'sec-fetch-dest': 'document',
     }
 
-    it('is a person opening a page', async () => {
-        const { isPageVisit } = await load()
-        expect(isPageVisit('GET', new Headers(page))).toBe(true)
+    it('is a person opening a page, or a Server Action', async () => {
+        const { showsHeader } = await load()
+        expect(showsHeader('GET', new Headers(page))).toBe(true)
+        expect(
+            showsHeader(
+                'POST',
+                new Headers({
+                    'next-action': 'abc',
+                }),
+            ),
+        ).toBe(true)
         // A client without Fetch Metadata.
         expect(
-            isPageVisit(
+            showsHeader(
                 'GET',
                 new Headers({
                     accept: 'text/html',
@@ -185,8 +219,8 @@ describe('isPageVisit', () => {
         ).toBe(true)
     })
 
-    it('is not a prefetch, a router fetch, a frame or a POST', async () => {
-        const { isPageVisit } = await load()
+    it('is not a prefetch, a router fetch, a frame or a plain POST', async () => {
+        const { showsHeader } = await load()
         for (const headers of [
             {
                 ...page,
@@ -206,7 +240,7 @@ describe('isPageVisit', () => {
                 'sec-fetch-dest': 'iframe',
             },
         ])
-            expect(isPageVisit('GET', new Headers(headers))).toBe(false)
-        expect(isPageVisit('POST', new Headers(page))).toBe(false)
+            expect(showsHeader('GET', new Headers(headers))).toBe(false)
+        expect(showsHeader('POST', new Headers(page))).toBe(false)
     })
 })

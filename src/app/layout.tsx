@@ -13,7 +13,7 @@ import { serverEnv } from '@/lib/env/server'
 import { NONCE_HEADER } from '@/lib/security/csp'
 import { CANONICAL_HEADER, languageAlternates, localizedPath, PATHNAME_HEADER } from '@/lib/seo/alternates'
 import { baseOpenGraph } from '@/lib/seo/metadata'
-import { ACCOUNT_HEADER, type Account, accounts } from '@/lib/session/session'
+import { ACCOUNT_HEADER, accountFromHeader, accounts } from '@/lib/session/session'
 import './globals.css'
 
 /**
@@ -98,8 +98,7 @@ export default async function RootLayout({ children }: LayoutProps<'/'>) {
     const nonce = requestHeaders.get(NONCE_HEADER) ?? undefined
     const site = serverEnv.SITE_URL
     // What the proxy found; null when nobody is signed in, undefined while the site has no accounts.
-    const person = requestHeaders.get(ACCOUNT_HEADER)
-    const account = accounts ? (person ? (JSON.parse(decodeURIComponent(person)) as Account) : null) : undefined
+    const account = accounts ? accountFromHeader(requestHeaders.get(ACCOUNT_HEADER)) : undefined
 
     return (
         <html lang={locale}>

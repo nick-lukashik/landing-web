@@ -12,6 +12,16 @@ test.use({
     baseURL: SSO_URL,
 })
 
+// The tag manager's script, answered here: the tests stay off the network.
+test.beforeEach(({ page }) =>
+    page.route('https://www.googletagmanager.com/gtm.js**', route =>
+        route.fulfill({
+            contentType: 'text/javascript',
+            body: '',
+        }),
+    ),
+)
+
 /** The person the mock account site signs in at /login. */
 const signsInAs = (context: BrowserContext, email: string) =>
     context.addCookies([
@@ -108,6 +118,14 @@ test.describe('the account of the shared session cookie', () => {
 
     test('a page load makes one call, a prefetch or a router fetch none', async ({ page, context }) => {
         const email = `e2e-${randomUUID()}@example.com`
+        // Answered already: the banner would cover the footer's link.
+        await context.addCookies([
+            {
+                name: 'nl_consent',
+                value: 'denied',
+                url: SSO_URL,
+            },
+        ])
         await signedIn(page, context, email)
         await expect(header(page).getByText(email)).toBeVisible()
         const routerFetches: string[] = []
@@ -207,18 +225,65 @@ test.describe('the account of the shared session cookie', () => {
         await expect(signOutButton(page)).toBeVisible()
     })
 
+    test('answering the consent banner keeps the name, at the cost of one call', async ({ page, context }) => {
+        const email = `named-${randomUUID()}@example.com`
+        await signedIn(page, context, email)
+        const name = header(page).getByRole('link', {
+            name: 'Named Person',
+        })
+        await expect(name).toBeVisible()
+        const { me } = await sessionsAt(page, email)
+        const banner = page.getByRole('region', {
+            name: en.consent.label,
+        })
+        // Pressed until the page has come alive: the button is there before its handler is.
+        await expect(async () => {
+            await banner
+                .getByRole('button', {
+                    name: en.consent.accept,
+                })
+                .click({
+                    timeout: 1_000,
+                })
+            await expect(banner).toBeHidden({
+                timeout: 1_000,
+            })
+        }).toPass()
+        await expect
+            .poll(async () => (await context.cookies(SSO_URL)).find(cookie => cookie.name === 'nl_consent')?.value)
+            .toBe('granted')
+        await expect.poll(async () => (await sessionsAt(page, email)).me).toBe(me + 1)
+        await expect(name).toBeVisible()
+    })
+
     test('the browser cannot say who the person is', async ({ page }) => {
+        const forged = encodeURIComponent(
+            JSON.stringify({
+                name: 'Forged Person',
+                email: null,
+            }),
+        )
         const response = await page.request.get('/?lang=en', {
             headers: {
-                'x-nl-account': encodeURIComponent(
-                    JSON.stringify({
-                        name: 'Forged Person',
-                        email: null,
-                    }),
-                ),
+                'x-nl-account': forged,
             },
         })
         expect(await response.text()).not.toContain('Forged Person')
+
+        // Where the proxy does not run: nothing breaks, and the answer is for the sender alone.
+        for (const value of [
+            forged,
+            '%',
+            encodeURIComponent('{"name":{"a":1},"email":null}'),
+        ]) {
+            const elsewhere = await page.request.get('/api/nowhere', {
+                headers: {
+                    'x-nl-account': value,
+                },
+            })
+            expect(elsewhere.status()).toBe(404)
+            expect(elsewhere.headers()['cache-control']).toContain('no-store')
+        }
     })
 
     test('a sign-out from another origin does nothing', async ({ page, context }) => {

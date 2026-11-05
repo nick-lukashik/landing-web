@@ -84,8 +84,10 @@ export default defineConfig({
                   reuseExistingServer: false,
                   timeout: 30_000,
               },
+              // As prod: accounts and the tag manager, whose consent re-renders the header.
               site(SSO_PORT, {
                   ROBOTS: 'index',
+                  GTM_ID: 'GTM-E2ETEST',
                   ID_URL: `http://127.0.0.1:${ID_PORT}`,
                   ID_API_URL: `http://127.0.0.1:${ID_PORT}`,
                   SESSION_SECRET,

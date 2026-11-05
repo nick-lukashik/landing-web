@@ -1,4 +1,5 @@
 import 'server-only'
+import { z } from 'zod'
 import { consentDomain } from '@/lib/analytics/consent'
 import { serverEnv } from '@/lib/env/server'
 import { seal, unseal } from './seal'
@@ -38,10 +39,28 @@ export const SESSION_MAX_AGE = 30 * 86_400
 /** Refresh when less than this is left of the access token. */
 export const REFRESH_BEFORE_MS = 60_000
 /**
- * Set by the proxy for the layout, and only by it: the person of this request, as
- * JSON. Saves the layout a second call to id-api.
+ * Set by the proxy for the layout: the person of this request, as JSON. Saves the
+ * layout a second call to id-api. The proxy removes what a browser sends, except where
+ * it does not run (/api/*): a page rendered there shows the sender only their own
+ * words, so the layout reads the header as untrusted.
  */
 export const ACCOUNT_HEADER = 'x-nl-account'
+const accountSchema = z.object({
+    name: z.string().nullable(),
+    email: z.string().nullable(),
+})
+
+export const accountHeader = (account: Account) => encodeURIComponent(JSON.stringify(account))
+
+/** Who the header names; null when nobody, or when it is not what the proxy writes. */
+export function accountFromHeader(value: string | null): Account | null {
+    if (!value) return null
+    try {
+        return accountSchema.parse(JSON.parse(decodeURIComponent(value)))
+    } catch {
+        return null
+    }
+}
 
 /**
  * A refresh is waited for as long as id-api may still turn the token (8 s,
@@ -128,7 +147,7 @@ async function idApi<T>(
     }
 }
 
-/** New tokens. `ended`: id-api refused; `unavailable`: keep the cookie and try on a later page. */
+/** New tokens. `ended`: id-api refused the token; `unavailable`: keep the cookie and try on a later page. */
 export async function refreshSession(config: Accounts, session: Session): Promise<Session | 'ended' | 'unavailable'> {
     const tokens = await idApi<{
         accessToken: string
@@ -142,8 +161,8 @@ export async function refreshSession(config: Accounts, session: Session): Promis
         },
         timeoutMs: REFRESH_TIMEOUT_MS,
     })
-    if (!tokens || tokens.status >= 500) return 'unavailable'
-    if (!tokens.data) return 'ended'
+    if (tokens?.status === 401 || tokens?.status === 400) return 'ended'
+    if (!tokens?.data) return 'unavailable'
     return {
         accessToken: tokens.data.accessToken,
         accessExpiresAt: Date.parse(tokens.data.accessExpiresAt),
@@ -187,16 +206,18 @@ export async function endSession(config: Accounts, session: Session) {
 }
 
 /**
- * A person opening a page, as opposed to anything a page or the browser fetches by
- * itself: a GET for a top-level document (Fetch Metadata, or an HTML Accept without
- * it); no prefetch or prerender, frame, script or the router's fetch.
+ * A request whose answer shows the person the header: a GET for a top-level document
+ * (Fetch Metadata, or an HTML Accept without it), or a Server Action, which renders the
+ * layout again when it sets a cookie. Not a prefetch or prerender, a frame, a script
+ * or the router's fetch.
  */
-export function isPageVisit(
+export function showsHeader(
     method: string,
     headers: {
         get(name: string): string | null
     },
 ) {
+    if (method === 'POST') return headers.get('next-action') !== null
     if (method !== 'GET') return false
     if (headers.get('sec-purpose') !== null || headers.get('purpose') !== null) return false
     const mode = headers.get('sec-fetch-mode')

@@ -8,17 +8,18 @@ import { CANONICAL_HEADER, canonicalPath, PATHNAME_HEADER } from '@/lib/seo/alte
 import {
     ACCOUNT_HEADER,
     type Account,
+    accountHeader,
     accounts,
     cookieName,
     currentAccount,
     expiredSessionCookie,
-    isPageVisit,
     openSession,
     REFRESH_BEFORE_MS,
     refreshSession,
     SESSION_MAX_AGE,
     sealSession,
     sessionCookieOptions,
+    showsHeader,
 } from '@/lib/session/session'
 
 // Read at runtime: the same image reports what the deploy sets.
@@ -41,7 +42,7 @@ export async function proxy(request: NextRequest) {
     forwarded.set(REQUEST_ID_HEADER, requestId)
     // Only this proxy says who the person is, never the browser.
     forwarded.delete(ACCOUNT_HEADER)
-    if (account?.who) forwarded.set(ACCOUNT_HEADER, encodeURIComponent(JSON.stringify(account.who)))
+    if (account?.who) forwarded.set(ACCOUNT_HEADER, accountHeader(account.who))
 
     const { pathname, searchParams, protocol } = request.nextUrl
     const page = !isMachinePath(pathname)
@@ -100,11 +101,11 @@ const UNNAMED: Account = {
 }
 
 /**
- * The session before the page renders. A page visit refreshes it when its access
- * token is about to expire and asks id-api once who the person is, which also tells a
- * session ended elsewhere: the cookie goes then. A prefetch or a router fetch asks
- * nothing, and without the cookie nothing is asked at all. The pages read the header
- * this sets, never the cookie.
+ * The session before the page renders. A request that shows the header refreshes it
+ * when its access token is about to expire and asks id-api once who the person is,
+ * which also tells a session ended elsewhere: the cookie goes then. A prefetch or a
+ * router fetch asks nothing, and without the cookie nothing is asked at all. The pages
+ * read the header this sets, never the cookie.
  */
 async function keepAccount(request: NextRequest): Promise<AccountStep | undefined> {
     if (!accounts) return undefined
@@ -116,7 +117,7 @@ async function keepAccount(request: NextRequest): Promise<AccountStep | undefine
     })
     let session = openSession(accounts, sealed)
     if (!session) return drop()
-    if (!isPageVisit(request.method, request.headers))
+    if (!showsHeader(request.method, request.headers))
         return {
             who: UNNAMED,
         }
