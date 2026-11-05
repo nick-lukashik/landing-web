@@ -1,6 +1,6 @@
 # landing-web
 
-The site on `https://nick-lukashik.com`: one page in English and Russian with who I am, how I work and where to reach me. Made from [`next-starter`](https://github.com/nick-lukashik/next-starter) (`.template-version`); the design is stock shadcn/ui, the text and links come from the previous site (`outegro-dev/platform`, `apps/landing-web`).
+The site on `https://nick-lukashik.com`, in English and Russian: a main page with who I am, how I work and where to reach me, the privacy policy and terms, and sign-in through the account site ([Accounts](#accounts)). Made from [`next-starter`](https://github.com/nick-lukashik/next-starter) (`.template-version`); the design is stock shadcn/ui, the text and links come from the previous site (`outegro-dev/platform`, `apps/landing-web`).
 
 Everything the starter documents applies here: commands, SEO, CSP, health probes, Docker, CI and deploy (see its README). Only what is specific to this site is below.
 
@@ -27,7 +27,7 @@ The site signs in through the account site (`id.nick-lukashik.com`), as the prev
 | `POST /auth/sign-out` | Ends this site's session at `id-api`, then goes to id-web's `/logout`: the account site and every other site of the platform sign out too, and the browser comes back here |
 | `/auth/error` | A sign-in the person asked for did not work, and "Try again" |
 
-- **The session.** `__Host-site_session`: tokens and the name to show, sealed with AES-256-GCM under `SESSION_SECRET`, `HttpOnly`, 30 days. The proxy refreshes it with less than 60 s left and asks `id-api` for the name again then.
+- **The session.** `__Host-site_session`: tokens and the name and email to show, sealed with AES-256-GCM under `SESSION_SECRET`, `HttpOnly`, 30 days. The proxy refreshes it with less than 60 s left and asks `id-api` for the name and email again then.
 - **A session ended elsewhere** stops at the next page visit, though its access token still works: with no refresh due the proxy asks `id-api` (`GET /api/v1/me/session`, 1 s) and drops the cookie on `active: false`. Any other answer, or none, leaves the page on its token.
 - **Silent sign-in** (`src/lib/sso/silent.ts`): signed in at the account site means signed in here, with no click. The account site keeps `nl_hint=1` on the parent domain while it is signed in. A page visit with the hint and no session here goes once through `/auth/sign-in?silent=1` (`prompt=none`: no page at the account site) and comes back signed in, or signed out without an error. Never for crawlers, prefetches or Lighthouse; at most once per 5 minutes (`site_silent=tried`).
 - **Sign-out is for the whole account.** "Sign out" here or on the account site signs out of every site in this browser: id-api ends the sessions signed in from the account site's session, and a session here ends as soon as the hint is gone.
