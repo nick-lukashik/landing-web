@@ -42,7 +42,7 @@ const schema = z
             ? z.string().optional()
             : unsetIfBlank(z.string().min(32, 'at least 32 characters').optional()),
         /** `noindex` (stage): robots.txt disallows everything, pages say noindex. */
-        /** Google Tag Manager container (GTM-ABC1234). Unset: no tag manager, and the CSP stays on this origin. */
+        /** Google Tag Manager container (GTM-ABC1234). Set: a consent banner, and the container after a yes. Unset: neither, and the CSP stays on this origin. */
         GTM_ID: unsetIfBlank(
             z
                 .string()
