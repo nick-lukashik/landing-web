@@ -145,7 +145,7 @@
                 "title": "How long it is kept",
                 "items": [
                     "Account data stays until you ask to delete the account.",
-                    "Inbox messages stay until the account is deleted. Your coin balance and its history count as payment records and stay after that too. Records of emails sent hold no address and no text, only a request or payment reference, the template and the status, and have no fixed deletion date yet.",
+                    "Inbox messages stay until the account is deleted. Your coin balance and its history count as payment records and stay after that too. Records of emails sent hold no address and no text, only a request or payment reference, the template and the status, and are deleted 90 days after the last attempt to send.",
                     "Sign-in codes expire after ten minutes and are deleted after 24 hours. A session ends thirty days after its last activity at the latest; ended sessions are kept for 90 days to investigate misuse, then deleted.",
                     "Payment records are kept as long as accounting rules require.",
                     "Server logs: 30 days. Backups are encrypted and replaced on a rolling basis."
