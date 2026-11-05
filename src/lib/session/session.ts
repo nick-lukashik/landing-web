@@ -206,18 +206,16 @@ export async function endSession(config: Accounts, session: Session) {
 }
 
 /**
- * A request whose answer shows the person the header: a GET for a top-level document
- * (Fetch Metadata, or an HTML Accept without it), or a Server Action, which renders the
- * layout again when it sets a cookie. Not a prefetch or prerender, a frame, a script
- * or the router's fetch.
+ * A person opening a page, as opposed to anything a page or the browser fetches by
+ * itself: a GET for a top-level document (Fetch Metadata, or an HTML Accept without
+ * it); no prefetch or prerender, frame, script or the router's fetch.
  */
-export function showsHeader(
+export function isPageVisit(
     method: string,
     headers: {
         get(name: string): string | null
     },
 ) {
-    if (method === 'POST') return headers.get('next-action') !== null
     if (method !== 'GET') return false
     if (headers.get('sec-purpose') !== null || headers.get('purpose') !== null) return false
     const mode = headers.get('sec-fetch-mode')

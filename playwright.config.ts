@@ -84,7 +84,7 @@ export default defineConfig({
                   reuseExistingServer: false,
                   timeout: 30_000,
               },
-              // As prod: accounts and the tag manager, whose consent re-renders the header.
+              // As prod: accounts and the tag manager, whose banner must not touch the header.
               site(SSO_PORT, {
                   ROBOTS: 'index',
                   GTM_ID: 'GTM-E2ETEST',

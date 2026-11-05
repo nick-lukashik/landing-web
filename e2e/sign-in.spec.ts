@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import AxeBuilder from '@axe-core/playwright'
 import { type BrowserContext, type Page } from '@playwright/test'
-import { en, expect, test } from './fixtures'
+import { en, expect, ru, test } from './fixtures'
 import { ID_PORT, SSO_PORT } from './servers'
 
 const SSO_URL = `http://127.0.0.1:${SSO_PORT}`
@@ -118,11 +118,11 @@ test.describe('the account of the shared session cookie', () => {
 
     test('a page load makes one call, a prefetch or a router fetch none', async ({ page, context }) => {
         const email = `e2e-${randomUUID()}@example.com`
-        // Answered already: the banner would cover the footer's link.
+        // Pressed already: the banner would cover the footer's link.
         await context.addCookies([
             {
                 name: 'nl_consent',
-                value: 'denied',
+                value: 'true',
                 url: SSO_URL,
             },
         ])
@@ -225,7 +225,7 @@ test.describe('the account of the shared session cookie', () => {
         await expect(signOutButton(page)).toBeVisible()
     })
 
-    test('answering the consent banner keeps the name, at the cost of one call', async ({ page, context }) => {
+    test('"OK" on the banner asks id-api nothing and leaves the header alone', async ({ page, context }) => {
         const email = `named-${randomUUID()}@example.com`
         await signedIn(page, context, email)
         const name = header(page).getByRole('link', {
@@ -240,7 +240,7 @@ test.describe('the account of the shared session cookie', () => {
         await expect(async () => {
             await banner
                 .getByRole('button', {
-                    name: en.consent.accept,
+                    name: en.consent.ok,
                 })
                 .click({
                     timeout: 1_000,
@@ -251,9 +251,30 @@ test.describe('the account of the shared session cookie', () => {
         }).toPass()
         await expect
             .poll(async () => (await context.cookies(SSO_URL)).find(cookie => cookie.name === 'nl_consent')?.value)
-            .toBe('granted')
-        await expect.poll(async () => (await sessionsAt(page, email)).me).toBe(me + 1)
+            .toBe('true')
+        expect((await sessionsAt(page, email)).me).toBe(me)
         await expect(name).toBeVisible()
+    })
+
+    test('the language switch costs only the call of the page it reloads', async ({ page, context }) => {
+        const email = `named-${randomUUID()}@example.com`
+        await signedIn(page, context, email)
+        const name = header(page).getByRole('link', {
+            name: 'Named Person',
+        })
+        await expect(name).toBeVisible()
+        const { me } = await sessionsAt(page, email)
+        await page
+            .getByRole('navigation', {
+                name: en.nav.language,
+            })
+            .getByRole('link', {
+                name: ru.meta.languageName,
+            })
+            .click()
+        await expect(page.locator('html')).toHaveAttribute('lang', 'ru')
+        await expect(name).toBeVisible()
+        expect((await sessionsAt(page, email)).me).toBe(me + 1)
     })
 
     test('the browser cannot say who the person is', async ({ page }) => {
