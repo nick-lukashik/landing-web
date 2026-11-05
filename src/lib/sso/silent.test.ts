@@ -33,12 +33,14 @@ describe('isPageVisit', () => {
                 }),
             ),
         ).toBe(false)
+        // A router fetch: the proxy never sees its `rsc` header, Next.js takes it off first.
         expect(
             isPageVisit(
                 'GET',
                 headers({
                     ...page,
-                    rsc: '1',
+                    'sec-fetch-mode': 'cors',
+                    'sec-fetch-dest': 'empty',
                 }),
             ),
         ).toBe(false)
