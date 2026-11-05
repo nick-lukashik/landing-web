@@ -44,7 +44,6 @@ export function isPageVisit(
     const agent = headers.get('user-agent')
     if (!agent || BOT.test(agent)) return false
     if (headers.get('sec-purpose') !== null || headers.get('purpose') !== null) return false
-    if (headers.get('rsc') !== null || headers.get('next-router-prefetch') !== null) return false
     const mode = headers.get('sec-fetch-mode')
     const dest = headers.get('sec-fetch-dest')
     if (mode !== null || dest !== null) return mode === 'navigate' && dest === 'document'
