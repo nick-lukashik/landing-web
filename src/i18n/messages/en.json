@@ -124,9 +124,9 @@
                     "nl_hint: a note that this browser is signed in at id.nick-lukashik.com, set for the whole nick-lukashik.com domain, so this site can let you in without signing in again. It holds no personal data, just “1”, and goes away when you sign out there.",
                     "site_silent: this site’s note about automatic sign-in, just “tried”: kept for five minutes after an attempt (a day if it failed in a way that would repeat), so the site does not try again on every page. It is deleted when you sign in.",
                     "Cloudflare, which delivers the sites, may set its own security cookies such as __cf_bm to tell people from bots.",
-                    "_ga and _ga_*: cookies of Google Analytics, two years. Only if you agreed to statistics.",
+                    "_ga and _ga_*: cookies of Google Analytics, two years. Set from the first visit, unless you turned statistics off.",
                     "nl_consent: your answer about statistics, for the whole nick-lukashik.com domain, kept for one year.",
-                    "All of them but the statistics cookies are needed for the sites to work, so those need no consent."
+                    "All of them but the statistics cookies are needed for the sites to work."
                 ]
             },
             {
@@ -136,7 +136,7 @@
                     "Cloudflare: every request passes through its network, which protects and delivers the sites. It also runs the domain name system and stores encrypted backups.",
                     "Google: only if you choose to sign in with Google. It shares your account ID, email address, whether the email is verified, and your name.",
                     "An email delivery service, for sign-in codes and receipts.",
-                    "Google Analytics, through Google Tag Manager: statistics of visits to the sites. Only if you agreed: until then nothing is loaded from Google.",
+                    "Google Analytics, through Google Tag Manager: statistics of visits to the sites from the first visit. Google receives the time of the visit, the pages, where you came from, your device, your approximate location and your IP address. You can turn it off.",
                     "A payment provider: takes payments, once there are any."
                 ]
             },
@@ -153,7 +153,7 @@
                 "title": "Your choices",
                 "items": [
                     "Change your name and language, add or remove passkeys, link or unlink Google and end sessions in your account at id.nick-lukashik.com.",
-                    "You can accept or decline statistics in the banner, and change your answer with “Cookie settings” at the bottom of any page. After a refusal the Google Analytics cookies are deleted.",
+                    "You can turn statistics off in the banner or with “Cookie settings” at the bottom of any page. After that nothing is loaded from Google, and the Google Analytics cookies are deleted.",
                     "To get a copy of your data or to delete your account, write to the contact below."
                 ]
             },
@@ -217,10 +217,10 @@
     },
     "consent": {
         "label": "Statistics cookies",
-        "text": "We count visits with Google Analytics. It sets cookies and sends Google data about your visit. Only if you agree: until then nothing is loaded from Google.",
+        "text": "We count visits with Google Analytics. It sets cookies and sends Google data about your visit. You can turn it off.",
         "more": "Privacy policy",
-        "accept": "Accept",
-        "decline": "Decline",
+        "accept": "OK",
+        "decline": "Turn off",
         "settings": "Cookie settings"
     }
 }
