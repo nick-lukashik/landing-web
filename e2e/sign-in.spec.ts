@@ -40,6 +40,7 @@ async function sessionsAt(page: Page, email: string) {
     return (await response.json()) as {
         refresh: number
         live: number
+        checks: number
     }
 }
 
@@ -205,6 +206,88 @@ test.describe('sign-in through the account site', () => {
                 name: en.nav.signIn,
             }),
         ).toBeVisible()
+    })
+
+    test('a session ended at the account site is signed out at the next page load', async ({ page, context }) => {
+        const email = `e2e-${randomUUID()}@example.com`
+        await signedInAtId(context, email)
+        await page.goto('/?lang=en')
+        await expect(header(page).getByText(email)).toBeVisible()
+
+        // Minutes left on the token and the hint still here: only the check can tell.
+        await page.request.post(`${ID_URL}/test/revoke`, {
+            data: {
+                email,
+            },
+        })
+        await context.clearCookies({
+            name: 'id_session',
+        })
+        await page.reload()
+        await expect(
+            header(page).getByRole('link', {
+                name: en.nav.signIn,
+            }),
+        ).toBeVisible()
+        const names = (await context.cookies(SSO_URL)).map(cookie => cookie.name)
+        expect(names).not.toContain('site_session')
+        expect(names).toContain('nl_hint')
+        expect((await sessionsAt(page, email)).live).toBe(0)
+    })
+
+    test('a check that gets a 503 leaves the visitor signed in', async ({ page, context }) => {
+        const email = `down-${randomUUID()}@example.com`
+        await signedInAtId(context, email)
+        await page.goto('/?lang=en')
+        await expect(header(page).getByText(email)).toBeVisible()
+        const { checks } = await sessionsAt(page, email)
+        await page.reload()
+        await expect(header(page).getByText(email)).toBeVisible()
+        expect((await sessionsAt(page, email)).checks).toBe(checks + 1)
+        expect((await context.cookies(SSO_URL)).map(cookie => cookie.name)).toContain('site_session')
+    })
+
+    test('a page load makes one check, a prefetch or a router fetch none', async ({ page, context }) => {
+        const email = `e2e-${randomUUID()}@example.com`
+        await signedInAtId(context, email)
+        await page.goto('/?lang=en')
+        await expect(header(page).getByText(email)).toBeVisible()
+        const routerFetches: string[] = []
+        page.on('request', request => {
+            if (request.headers().rsc) routerFetches.push(request.url())
+        })
+        const { checks } = await sessionsAt(page, email)
+        await page.reload()
+        await expect(header(page).getByText(email)).toBeVisible()
+        expect((await sessionsAt(page, email)).checks).toBe(checks + 1)
+
+        // A prefetch of the document: a page load in all but its purpose.
+        const prefetch = await page.request.get('/?lang=en', {
+            headers: {
+                accept: 'text/html',
+                'sec-fetch-mode': 'navigate',
+                'sec-fetch-dest': 'document',
+                'sec-purpose': 'prefetch',
+            },
+        })
+        expect(prefetch.ok()).toBe(true)
+        expect((await sessionsAt(page, email)).checks).toBe(checks + 1)
+
+        await page
+            .getByRole('contentinfo')
+            .getByRole('link', {
+                name: en.privacy.title,
+            })
+            .click()
+        await expect(page).toHaveURL(`${SSO_URL}/privacy`)
+        await expect(
+            page.getByRole('heading', {
+                name: en.privacy.title,
+                level: 1,
+            }),
+        ).toBeVisible()
+        expect(routerFetches).not.toEqual([])
+        expect((await sessionsAt(page, email)).checks).toBe(checks + 1)
     })
 
     test('a cancelled sign-in explains itself and offers another try', async ({ page, context }) => {
