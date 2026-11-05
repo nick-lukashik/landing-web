@@ -64,8 +64,8 @@ export function accountFromHeader(value: string | null): Account | null {
 
 /**
  * A refresh is waited for as long as id-api may still turn the token (8 s,
- * ROTATE_DEADLINE_MS): a token turned after this site gave up is lost, and the old
- * one burns the session 20 s later, on every site.
+ * ROTATE_DEADLINE_MS): a token turned after this site gave up is lost, and the next
+ * request has to turn the old one again.
  */
 const REFRESH_TIMEOUT_MS = 10_000
 /** A name is not worth holding a page for: past this the header says "Account". */
