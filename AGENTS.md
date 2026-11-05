@@ -30,7 +30,7 @@ Read a library's file before working with it. The first line of each file names 
 
 ## Where things are
 
-- `src/proxy.ts`: every request but `/api/*` (reserved for the API proxy, see next-example) gets a request id and `x-app-version`; pages also get the nonce CSP, the locale (`?lang=` > cookie > `Accept-Language`) and `x-pathname` for metadata.
+- `src/proxy.ts`: every request but `/api/*` (reserved for the API proxy, see next-example) gets a request id and `x-app-version`; pages also get the nonce CSP, the locale (`?lang=` > cookie > English) and `x-pathname` for metadata.
 - `src/app/`: routes. `layout.tsx` holds shared metadata and JSON-LD (`WebSite`, `Person`); `page.tsx` is the site; `health/live` and `health/ready` are the probes.
 - `src/lib/contacts.ts`: the owner's public profiles (page, footer, JSON-LD).
 - `src/lib/env/`: env through Zod, `server.ts` (server only, read at startup). No `NEXT_PUBLIC_*`: one image runs on stage and prod, so nothing environment-specific is inlined at build time (`ROBOTS` is runtime env too).
