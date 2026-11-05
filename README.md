@@ -50,9 +50,9 @@ pnpm verify && pnpm test:e2e
 
 The e2e suite starts the site a third time with accounts on, against `e2e/mock-id.mjs` (the account site in memory).
 
-## Short links
+## UTM marks
 
-`/c/acme` redirects to `/?utm_source=cover-letter&utm_medium=application&utm_campaign=acme`, so a link in a letter stays short and Google Analytics sees where the visit came from. A new link needs no change: only a new label, `[a-z0-9-]{1,60}` (keep it lower case: Google Analytics tells `Acme` from `acme`). The places are in `src/lib/short-links.ts`: `c` cover letter, `r` resume, `l` LinkedIn, `g` GitHub, `t` Telegram, `h` hh.ru.
+A link from elsewhere carries its marks in the query, `/?utm_source=linkedin&utm_medium=social&utm_campaign=profile`: Google Analytics reads them from the address, so nothing here knows about them. The canonical URL leaves them out.
 
 ## Deploy
 
