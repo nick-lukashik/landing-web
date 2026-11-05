@@ -29,7 +29,7 @@ const isMachinePath = (path: string) => path.startsWith('/health/')
 /**
  * Every request but /api: a request id (kept from the edge or new) and the app
  * version. Pages also get a per-request CSP nonce, the resolved locale
- * (?lang= > cookie > Accept-Language) and their path for metadata. With
+ * (?lang= > cookie > English) and their path for metadata. With
  * accounts on, the session is kept fresh before the page renders, and a
  * visitor signed in at id-web is signed in here silently (see lib/sso).
  */
@@ -67,7 +67,6 @@ export async function proxy(request: NextRequest) {
         const locale = resolveLocale({
             query: searchParams.get(LOCALE_PARAM),
             cookie: request.cookies.get(LOCALE_COOKIE)?.value,
-            acceptLanguage: request.headers.get('accept-language'),
         })
         forwarded.set(LOCALE_HEADER, locale.locale)
         forwarded.set(PATHNAME_HEADER, pathname)

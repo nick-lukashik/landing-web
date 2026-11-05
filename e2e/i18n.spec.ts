@@ -75,9 +75,9 @@ test.describe('first visit with a Russian browser', () => {
         locale: 'ru-RU',
     })
 
-    test('falls back to Accept-Language', async ({ page }) => {
+    test('is still in English', async ({ page }) => {
         await page.goto('/')
-        await expect(page.locator('html')).toHaveAttribute('lang', 'ru')
-        await expect(page).toHaveTitle(ru.home.meta.title)
+        await expect(page.locator('html')).toHaveAttribute('lang', 'en')
+        await expect(page).toHaveTitle(en.home.meta.title)
     })
 })
