@@ -50,6 +50,10 @@ pnpm verify && pnpm test:e2e
 
 The e2e suite starts the site a third time with accounts on, against `e2e/mock-id.mjs` (the account site in memory).
 
+## Short links
+
+`/c/acme` redirects to `/?utm_source=cover-letter&utm_medium=application&utm_campaign=acme`, so a link in a letter stays short and Google Analytics sees where the visit came from. A new link needs no change: only a new label, `[a-z0-9-]{1,60}` (keep it lower case: Google Analytics tells `Acme` from `acme`). The places are in `src/lib/short-links.ts`: `c` cover letter, `r` resume, `l` LinkedIn, `g` GitHub, `t` Telegram, `h` hh.ru.
+
 ## Deploy
 
 - CI (`.github/workflows/ci.yml`): `build.yml@v1` with `kind: web` runs verify, e2e and the image; on `master` it pushes `ghcr.io/nick-lukashik/landing-web` and `deploy-pr.yml@v1` opens the PR in `gitops`. Merging that PR is the deploy.
