@@ -13,13 +13,13 @@ import {
     cookieName,
     currentAccount,
     expiredSessionCookie,
+    isPageVisit,
     openSession,
     REFRESH_BEFORE_MS,
     refreshSession,
     SESSION_MAX_AGE,
     sealSession,
     sessionCookieOptions,
-    showsHeader,
 } from '@/lib/session/session'
 
 // Read at runtime: the same image reports what the deploy sets.
@@ -101,11 +101,11 @@ const UNNAMED: Account = {
 }
 
 /**
- * The session before the page renders. A request that shows the header refreshes it
- * when its access token is about to expire and asks id-api once who the person is,
- * which also tells a session ended elsewhere: the cookie goes then. A prefetch or a
- * router fetch asks nothing, and without the cookie nothing is asked at all. The pages
- * read the header this sets, never the cookie.
+ * The session before the page renders. A page visit refreshes it when its access
+ * token is about to expire and asks id-api once who the person is, which also tells a
+ * session ended elsewhere: the cookie goes then. Anything else asks nothing, and
+ * without the cookie nothing is asked at all. The pages read the header this sets,
+ * never the cookie.
  */
 async function keepAccount(request: NextRequest): Promise<AccountStep | undefined> {
     if (!accounts) return undefined
@@ -117,7 +117,7 @@ async function keepAccount(request: NextRequest): Promise<AccountStep | undefine
     })
     let session = openSession(accounts, sealed)
     if (!session) return drop()
-    if (!showsHeader(request.method, request.headers))
+    if (!isPageVisit(request.method, request.headers))
         return {
             who: UNNAMED,
         }

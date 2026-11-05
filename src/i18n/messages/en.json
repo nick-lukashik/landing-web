@@ -117,8 +117,8 @@
                     "__Host-id_login and __Host-id_google at id.nick-lukashik.com: a sign-in in progress. They live for ten minutes and are deleted when sign-in is complete.",
                     "__Host-id_passkey at id.nick-lukashik.com: the ID and the name of the passkey last used in this browser (such as “Chrome on macOS”), encrypted, so the sign-in page can offer it straight away. Kept for one year, also after you sign out. It goes when you remove that passkey in this browser, or when a sign-in finds that the passkey no longer exists.",
                     "Cloudflare, which delivers the sites, may set its own security cookies such as __cf_bm to tell people from bots.",
-                    "_ga and _ga_*: cookies of Google Analytics, two years. Set from the first visit, unless you turned statistics off.",
-                    "nl_consent: your answer about statistics, for the whole nick-lukashik.com domain, kept for one year.",
+                    "_ga and _ga_*: cookies of Google Analytics, two years. Set from the first visit.",
+                    "nl_consent: a mark that you pressed “OK” on the statistics banner, for the whole nick-lukashik.com domain, kept for one year. It only hides the banner.",
                     "All of them but the statistics cookies are needed for the sites to work."
                 ]
             },
@@ -129,7 +129,7 @@
                     "Cloudflare: every request passes through its network, which protects and delivers the sites. It also runs the domain name system and stores encrypted backups.",
                     "Google: only if you choose to sign in with Google. It shares your account ID, email address, whether the email is verified, and your name.",
                     "An email delivery service, for sign-in codes, welcome messages and receipts.",
-                    "Google Analytics, through Google Tag Manager: statistics of visits to the sites from the first visit. Google receives the time of the visit, the pages, where you came from, your device, your approximate location and your IP address. You can turn it off.",
+                    "Google Analytics, through Google Tag Manager: statistics of visits to the sites from the first visit. Google receives the time of the visit, the pages, where you came from, your device, your approximate location and your IP address.",
                     "Telegram: a daily summary of those statistics goes to the site owner’s private group. It has the number of visitors and pages viewed, the pages and where visitors came from, and for visits from a marked link also the time, source, campaign, city, country, device and length of the visit. It has no names, email addresses or IP addresses.",
                     "A payment provider: takes payments, once there are any."
                 ]
@@ -148,7 +148,7 @@
                 "title": "Your choices",
                 "items": [
                     "Change your name and language, add or remove passkeys, link or unlink Google and end sessions in your account at id.nick-lukashik.com.",
-                    "You can turn statistics off in the banner or with “Cookie settings” at the bottom of any page. After that nothing is loaded from Google, and the Google Analytics cookies are deleted.",
+                    "The sites always collect statistics and have no switch for it. You can limit them in your browser, by blocking cookies or Google's scripts.",
                     "To get a copy of your data or to delete your account, write to the contact below."
                 ]
             },
@@ -212,10 +212,8 @@
     },
     "consent": {
         "label": "Statistics cookies",
-        "text": "We count visits with Google Analytics. It sets cookies and sends Google data about your visit. You can turn it off.",
+        "text": "We count visits with Google Analytics. It sets cookies and sends Google data about your visit.",
         "more": "Privacy policy",
-        "accept": "OK",
-        "decline": "Turn off",
-        "settings": "Cookie settings"
+        "ok": "OK"
     }
 }
