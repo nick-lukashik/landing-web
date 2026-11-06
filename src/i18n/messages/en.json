@@ -86,7 +86,7 @@
         "back": "Back to the main page"
     },
     "legal": {
-        "updated": "Last updated: 5 November 2026",
+        "updated": "Last updated: 6 November 2026",
         "contact": "Questions and requests",
         "contactText": "Write on Telegram: <link>{handle}</link>. Requests are answered within 30 days."
     },
@@ -112,7 +112,7 @@
             {
                 "title": "Cookies",
                 "items": [
-                    "locale: your language, kept for one year.",
+                    "nl_locale: your language, for the whole nick-lukashik.com domain, kept for one year.",
                     "__Secure-nl_session, for the whole nick-lukashik.com domain: your session, encrypted. It is HttpOnly, so scripts cannot read it, and lives for thirty days.",
                     "__Host-id_login and __Host-id_google at id.nick-lukashik.com: a sign-in in progress. They live for ten minutes and are deleted when sign-in is complete.",
                     "__Host-id_passkey at id.nick-lukashik.com: the ID and the name of the passkey last used in this browser (such as “Chrome on macOS”), encrypted, so the sign-in page can offer it straight away. Kept for one year, also after you sign out. It goes when you remove that passkey in this browser, or when a sign-in finds that the passkey no longer exists.",
