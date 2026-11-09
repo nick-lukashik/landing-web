@@ -7,8 +7,8 @@ export const contacts = [
     },
     {
         key: 'linkedin',
-        handle: 'in/nick-lukashick',
-        href: 'https://www.linkedin.com/in/nick-lukashick/',
+        handle: 'in/nick-lukashik',
+        href: 'https://www.linkedin.com/in/nick-lukashik/',
     },
     {
         key: 'github',
