@@ -1,55 +1,62 @@
-/** Boxes of the platform diagram: name and a short mono caption, both tech names. */
+/** Grid of the platform diagram: columns 220 apart, boxes 175 wide (stores 190), 56 high. */
+const COL = 220
+const BOX = 175
+const STORE = 190
+const H = 56
+const x = (column: number) => 20 + column * COL
+
+/** Boxes: column, top, name and a short mono caption, both tech names. */
 const NODES = [
     [
-        20,
+        0,
         122,
         'Cloudflare',
         'DNS · TLS · R2',
     ],
     [
-        210,
+        1,
         122,
         'Traefik',
         'ORIGIN PULLS',
     ],
     [
-        400,
+        2,
         122,
         'K3s',
         'ARGO CD',
     ],
     [
-        590,
+        3,
         32,
         'landing-web',
         'NEXT.JS',
     ],
     [
-        590,
+        3,
         122,
         'id-web',
         'PASSKEYS',
     ],
     [
-        590,
+        3,
         212,
         'digests',
         'CRONJOB · GA → TG',
     ],
     [
-        780,
+        4,
         32,
         'id-api',
         'NESTJS · ES256',
     ],
     [
-        780,
+        4,
         122,
         'wallet · notify',
         'NESTJS',
     ],
     [
-        780,
+        4,
         212,
         'llm-gateway',
         'CODEX · CLAUDE',
@@ -58,44 +65,56 @@ const NODES = [
 
 const STORES = [
     [
-        970,
+        5,
         82,
         'Postgres · CNPG',
         'PITR 14 DAYS',
     ],
     [
-        970,
+        5,
         172,
         'RabbitMQ · Redis',
         'OUTBOX · INBOX',
     ],
 ] as const
 
+/** From the right edge of one box to the left edge of another, curving when the rows differ. */
+const link = (from: number, fromTop: number, to: number, toTop: number) => {
+    const x0 = x(from) + BOX
+    const x1 = x(to)
+    const y0 = fromTop + H / 2
+    const y1 = toTop + H / 2
+    const mid = (x0 + x1) / 2
+    return y0 === y1 ? `M${x0} ${y0}H${x1}` : `M${x0} ${y0}C${mid} ${y0} ${mid} ${y1} ${x1} ${y1}`
+}
+
 const LINES = [
-    'M150 150H210',
-    'M340 150H400',
-    'M530 150C560 150 560 60 590 60',
-    'M530 150H590',
-    'M530 150C560 150 560 240 590 240',
-    'M720 60H780',
-    'M720 150H780',
-    'M720 240H780',
-    'M910 60C940 60 940 110 970 110',
-    'M910 150C940 150 940 110 970 110',
-    'M910 150C940 150 940 200 970 200',
-    'M910 240C940 240 940 200 970 200',
+    link(0, 122, 1, 122),
+    link(1, 122, 2, 122),
+    link(2, 122, 3, 32),
+    link(2, 122, 3, 122),
+    link(2, 122, 3, 212),
+    link(3, 32, 4, 32),
+    link(3, 122, 4, 122),
+    link(3, 212, 4, 212),
+    link(4, 32, 5, 82),
+    link(4, 122, 5, 82),
+    link(4, 122, 5, 172),
+    link(4, 212, 5, 172),
 ]
+
+const WIDTH = x(5) + STORE + 20
 
 /** The platform at a glance: edge, cluster, apps, APIs and stores, with traffic running along the lines. */
 export function Architecture({ label }: { label: string }) {
     return (
         <figure className="reveal mb-7 overflow-x-auto border border-foreground p-7">
             <svg
-                viewBox="0 0 1160 300"
+                viewBox={`0 0 ${WIDTH} 300`}
                 fill="none"
                 role="img"
                 aria-label={label}
-                className="h-auto w-full min-w-[900px]"
+                className="h-auto w-full min-w-[980px]"
             >
                 <g
                     stroke="#ffffff"
@@ -111,53 +130,47 @@ export function Architecture({ label }: { label: string }) {
                     ))}
                 </g>
                 {[
-                    ...NODES.map(
-                        ([x, y, name, note]) =>
-                            [
-                                x,
-                                y,
-                                130,
-                                name,
-                                note,
-                            ] as const,
-                    ),
-                    ...STORES.map(
-                        ([x, y, name, note]) =>
-                            [
-                                x,
-                                y,
-                                170,
-                                name,
-                                note,
-                            ] as const,
-                    ),
-                ].map(([x, y, width, name, note]) => (
+                    ...NODES.map(([column, top, name, note]) => ({
+                        left: x(column),
+                        top,
+                        width: BOX,
+                        name,
+                        note,
+                    })),
+                    ...STORES.map(([column, top, name, note]) => ({
+                        left: x(column),
+                        top,
+                        width: STORE,
+                        name,
+                        note,
+                    })),
+                ].map(({ left, top, width, name, note }) => (
                     <g key={name}>
                         <rect
-                            x={x}
-                            y={y}
+                            x={left}
+                            y={top}
                             width={width}
-                            height={56}
+                            height={H}
                             fill="#000000"
                             stroke="#ffffff"
                         />
                         <circle
-                            cx={x + width - 14}
-                            cy={y + 14}
+                            cx={left + width - 14}
+                            cy={top + 14}
                             r={3.5}
                             fill="#b9ff3d"
                         />
                         <text
-                            x={x + 16}
-                            y={y + 26}
+                            x={left + 16}
+                            y={top + 26}
                             fill="#ffffff"
                             className="font-mono text-[12px]"
                         >
                             {name}
                         </text>
                         <text
-                            x={x + 16}
-                            y={y + 44}
+                            x={left + 16}
+                            y={top + 44}
                             fill="#a3a3a3"
                             className="font-mono text-[10px] font-medium tracking-[0.08em]"
                         >

@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { contacts } from '@/lib/contacts'
-import { serverEnv } from '@/lib/env/server'
 
 const link = 'label hover:text-foreground'
 
@@ -52,11 +51,6 @@ export async function SiteFooter() {
                         </li>
                     </ul>
                 </nav>
-                <p className="label">
-                    {t('footer.version', {
-                        version: serverEnv.APP_VERSION,
-                    })}
-                </p>
             </div>
         </footer>
     )

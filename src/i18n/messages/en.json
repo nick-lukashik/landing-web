@@ -26,14 +26,12 @@
     },
     "footer": {
         "role": "Senior full-stack engineer",
-        "version": "Version {version}",
         "links": "Contacts",
         "legal": "About this site",
         "hosted": "Built and hosted on my own platform"
     },
     "intro": {
         "booting": "Booting platform ···",
-        "skip": "Skip intro",
         "replay": "Replay intro"
     },
     "roulette": {
