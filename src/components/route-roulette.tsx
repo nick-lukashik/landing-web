@@ -151,7 +151,8 @@ export function RouteRoulette({ pages }: { pages: RoulettePage[] }) {
             setPhase('out')
             return
         }
-        const timer = setTimeout(() => setPhase('out'), 3000)
+        // A slow network: keep spinning on the winner rather than show the old page again.
+        const timer = setTimeout(() => setPhase('out'), 10_000)
         return () => clearTimeout(timer)
     }, [
         spin,

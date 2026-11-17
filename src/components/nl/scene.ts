@@ -391,6 +391,7 @@ export function createScene(host: HTMLElement, options: SceneOptions): Scene {
     let frameId = 0
     let last = 0
     let dirty = true
+    let cleared = false
 
     const mouse = new THREE.Vector2()
     const tilt = new THREE.Vector2()
@@ -556,8 +557,16 @@ export function createScene(host: HTMLElement, options: SceneOptions): Scene {
 
         if (options.reduce && !dirty) return
         dirty = false
-        if (U.uFade.value > 0.004) renderer.render(scene, camera)
-        else renderer.clear()
+        // Nothing to draw once the logo has faded out (another page) or the sections cover it
+        // (scrolled past the hero): clear once and let the GPU rest.
+        const covered = scrollPos > innerHeight * 1.05
+        if (U.uFade.value > 0.004 && !covered) {
+            renderer.render(scene, camera)
+            cleared = false
+        } else if (!cleared) {
+            renderer.clear()
+            cleared = true
+        }
     }
 
     function start() {
