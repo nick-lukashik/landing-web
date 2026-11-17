@@ -15,19 +15,19 @@ export async function LegalPage({ namespace }: { namespace: 'privacy' | 'terms' 
     const sections = t.raw('sections') as Section[]
     const telegram = contacts.find(contact => contact.key === 'telegram')
     return (
-        <article className="grid max-w-3xl gap-10">
+        <article className="wrap grid gap-10 pt-[70px] pb-16 *:max-w-3xl">
             <header className="grid gap-3">
-                <h1 className="text-4xl font-bold tracking-tight text-balance">{t('title')}</h1>
+                <h1 className="display text-[clamp(44px,6vw,96px)] text-balance">{t('title')}</h1>
                 <p className="text-sm text-muted-foreground">{legal('updated')}</p>
-                <p className="text-lg text-pretty">{t('intro')}</p>
+                <p className="text-base text-pretty text-soft">{t('intro')}</p>
             </header>
             {sections.map(section => (
                 <section
                     key={section.title}
                     className="grid gap-3"
                 >
-                    <h2 className="text-2xl font-semibold tracking-tight">{section.title}</h2>
-                    <ul className="grid list-disc gap-2 pl-5 text-pretty">
+                    <h2 className="display text-4xl">{section.title}</h2>
+                    <ul className="grid list-disc gap-2 pl-5 text-pretty text-soft">
                         {section.items.map(item => (
                             <li key={item}>{item}</li>
                         ))}
@@ -35,7 +35,7 @@ export async function LegalPage({ namespace }: { namespace: 'privacy' | 'terms' 
                 </section>
             ))}
             <section className="grid gap-3">
-                <h2 className="text-2xl font-semibold tracking-tight">{legal('contact')}</h2>
+                <h2 className="display text-4xl">{legal('contact')}</h2>
                 <p>
                     {legal.rich('contactText', {
                         handle: telegram?.handle ?? '',

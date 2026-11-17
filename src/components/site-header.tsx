@@ -1,27 +1,48 @@
 'use client'
 
+import { type Route } from 'next'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useState } from 'react'
+import { LineIcon } from '@/components/icons'
+import { Button } from '@/components/ui/button'
 import { type AppLocale } from '@/i18n/config'
+import { CALL_URL } from '@/lib/content'
 import { type Account } from '@/lib/session/session'
 import { cn } from '@/lib/utils'
 import { LocaleSwitch } from './locale-switch'
 
 const links = [
     {
-        href: '/',
-        label: 'home',
+        href: '/#platform',
+        label: 'platform',
+    },
+    {
+        href: '/#about',
+        label: 'about',
+    },
+    {
+        href: '/tools',
+        label: 'tools',
+    },
+    {
+        href: '/blog',
+        label: 'blog',
+    },
+    {
+        href: '/#experience',
+        label: 'experience',
     },
 ] as const
 
-const quiet =
-    'inline-flex h-11 items-center rounded-md px-3 text-sm font-medium text-muted-foreground hover:text-foreground'
+const quiet = 'label inline-flex h-11 items-center px-2 text-muted-foreground hover:text-foreground'
 
 /**
  * `account`: the person signed in, null when nobody is, undefined while the site
  * has no accounts (no sign-in link then). Sign-in is a plain link to the account
  * site, back to this page; sign-out a plain form: both reload the page anyway.
+ * Below 980px the links fold into a menu.
  */
 export function SiteHeader({
     languageNames,
@@ -35,37 +56,48 @@ export function SiteHeader({
     site: string
 }) {
     const t = useTranslations('nav')
+    const meta = useTranslations('meta')
     const pathname = usePathname()
-    const isCurrent = (href: string) =>
-        href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`)
+    const [open, setOpen] = useState(false)
+    const isCurrent = (href: string) => !href.includes('#') && (pathname === href || pathname.startsWith(`${href}/`))
+
+    const nav = (className: string) =>
+        links.map(link => (
+            <Link
+                key={link.href}
+                href={link.href as Route}
+                aria-current={isCurrent(link.href) ? 'page' : undefined}
+                onClick={() => setOpen(false)}
+                className={cn(quiet, 'aria-[current=page]:text-foreground', className)}
+            >
+                {t(link.label)}
+            </Link>
+        ))
 
     return (
-        <header className="border-b bg-background">
-            <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-3">
+        <header className="sticky top-0 z-30 border-b border-foreground bg-background">
+            <div className="wrap flex h-16 items-center justify-between gap-4">
+                <Link
+                    href="/"
+                    className="flex items-center gap-3.5"
+                >
+                    <span className="font-display text-2xl leading-none font-bold">NL</span>
+                    <span className="label hidden text-[0.6875rem] tracking-[0.2em] text-muted-foreground sm:inline">
+                        {meta('siteName')}
+                    </span>
+                </Link>
                 <nav
                     aria-label={t('label')}
-                    className="flex items-center gap-1"
+                    className="hidden items-center gap-3 min-[980px]:flex"
                 >
-                    {links.map(link => (
-                        <Link
-                            key={link.href}
-                            href={link.href}
-                            aria-current={isCurrent(link.href) ? 'page' : undefined}
-                            className={cn(
-                                'inline-flex h-11 items-center rounded-md px-3 text-sm font-medium text-muted-foreground hover:text-foreground',
-                                'aria-[current=page]:text-foreground aria-[current=page]:underline aria-[current=page]:underline-offset-4',
-                            )}
-                        >
-                            {t(link.label)}
-                        </Link>
-                    ))}
+                    {nav('')}
                 </nav>
-                <div className="flex flex-wrap items-center gap-1">
+                <div className="flex items-center gap-1">
                     {account === null ? (
                         <a
                             href={`${accountSite}/login?continue=${encodeURIComponent(`${site}${pathname}`)}`}
                             rel="nofollow"
-                            className={quiet}
+                            className={cn(quiet, 'hidden sm:inline-flex')}
                         >
                             {t('signIn')}
                         </a>
@@ -73,7 +105,7 @@ export function SiteHeader({
                         <>
                             <a
                                 href={`${accountSite}/account`}
-                                className={quiet}
+                                className={cn(quiet, 'hidden sm:inline-flex')}
                                 title={
                                     account.email
                                         ? t('signedInAs', {
@@ -98,8 +130,56 @@ export function SiteHeader({
                         </>
                     ) : null}
                     <LocaleSwitch names={languageNames} />
+                    <Button
+                        asChild
+                        size="sm"
+                        variant="outline"
+                        className="ml-2 hidden sm:inline-flex"
+                    >
+                        <a href={CALL_URL}>
+                            <LineIcon name="calendar" />
+                            {t('bookCall')}
+                        </a>
+                    </Button>
+                    <Button
+                        type="button"
+                        size="icon"
+                        variant="ghost"
+                        className="min-[980px]:hidden"
+                        aria-expanded={open}
+                        aria-controls="site-menu"
+                        onClick={() => setOpen(value => !value)}
+                    >
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth={1.5}
+                            aria-hidden="true"
+                            focusable="false"
+                        >
+                            <path d={open ? 'M5 5l14 14M19 5 5 19' : 'M3 7h18M3 12h18M3 17h18'} />
+                        </svg>
+                        <span className="sr-only">{t('menu')}</span>
+                    </Button>
                 </div>
             </div>
+            <nav
+                id="site-menu"
+                aria-label={t('menu')}
+                hidden={!open}
+                className="border-t border-foreground min-[980px]:hidden"
+            >
+                <div className="wrap flex flex-col py-2">
+                    {nav('h-12')}
+                    <a
+                        href={CALL_URL}
+                        className={cn(quiet, 'h-12 text-foreground sm:hidden')}
+                    >
+                        {t('bookCall')}
+                    </a>
+                </div>
+            </nav>
         </header>
     )
 }

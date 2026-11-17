@@ -1,5 +1,6 @@
 import { type MetadataRoute } from 'next'
 import { locales } from '@/i18n/config'
+import { PARTS, POSTS } from '@/lib/content'
 import { serverEnv } from '@/lib/env/server'
 import { languageAlternates, localizedPath } from '@/lib/seo/alternates'
 
@@ -26,12 +27,33 @@ function localized(path: string, extra: Omit<Entry, 'url'> = {}): MetadataRoute.
     }))
 }
 
-/** Every public page: the landing, and the privacy policy and terms. */
+/** Every public page: the landing, the platform parts, the blog and its notes, tools, and the privacy policy and terms. */
 export default function sitemap(): MetadataRoute.Sitemap {
     return [
         ...localized('/', {
             changeFrequency: 'weekly',
             priority: 1,
+        }),
+        ...PARTS.flatMap(part =>
+            localized(`/platform/${part.id}`, {
+                changeFrequency: 'monthly',
+                priority: 0.7,
+            }),
+        ),
+        ...localized('/blog', {
+            changeFrequency: 'weekly',
+            priority: 0.8,
+        }),
+        ...POSTS.flatMap(post =>
+            localized(`/blog/${post.id}`, {
+                lastModified: post.date,
+                changeFrequency: 'monthly',
+                priority: 0.6,
+            }),
+        ),
+        ...localized('/tools', {
+            changeFrequency: 'monthly',
+            priority: 0.5,
         }),
         ...localized('/privacy', {
             changeFrequency: 'yearly',

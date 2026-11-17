@@ -10,7 +10,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # landing-web: rules for agents
 
-The site on nick-lukashik.com, made from `next-starter`: the main page, `/privacy`, `/terms` and the account of the shared session cookie (`/auth/*`), EN/RU, stock shadcn/ui. Stack: Next.js 16.4 (App Router, `output: 'standalone'`, React Compiler, typed routes), React 19.3, TypeScript 7 (strict), Node 26, pnpm 12, next-intl 4 (EN/RU, no locale in the URL), Zod 4, Tailwind 4, shadcn/ui (Radix), Pino, Biome, Vitest 5, Playwright 1.64 + axe. No database and no `/api` proxy of its own; with accounts on, `src/proxy.ts` and `src/lib/session/` call id-api from the server.
+The site on nick-lukashik.com, made from `next-starter`: a job-search landing (the main page, `/platform/*`, `/blog`, `/blog/*`, `/tools`), `/privacy`, `/terms` and the account of the shared session cookie (`/auth/*`), EN/RU, one black-and-white theme (Mono Brutal) and a three.js logo intro. Stack: Next.js 16.4 (App Router, `output: 'standalone'`, React Compiler, typed routes), React 19.3, TypeScript 7 (strict), Node 26, pnpm 12, next-intl 4 (EN/RU, no locale in the URL), Zod 4, Tailwind 4, shadcn/ui (Radix), three.js (the logo), Pino, Biome, Vitest 5, Playwright 1.64 + axe. No database and no `/api` proxy of its own; with accounts on, `src/proxy.ts` and `src/lib/session/` call id-api from the server.
 
 ## Library rules
 
@@ -22,7 +22,7 @@ Read a library's file before working with it. The first line of each file names 
 | [.claude/rules/react.md](.claude/rules/react.md) | React 19 and React Compiler |
 | [.claude/rules/next-intl.md](.claude/rules/next-intl.md) | next-intl without i18n routing |
 | [.claude/rules/zod.md](.claude/rules/zod.md) | Zod 4: env, validation at boundaries |
-| [.claude/rules/tailwindcss.md](.claude/rules/tailwindcss.md) | Tailwind 4: tokens, one light theme |
+| [.claude/rules/tailwindcss.md](.claude/rules/tailwindcss.md) | Tailwind 4: tokens, one theme |
 | [.claude/rules/shadcn.md](.claude/rules/shadcn.md) | shadcn/ui: CLI, components, CSP |
 | [.claude/rules/vitest.md](.claude/rules/vitest.md) | unit tests |
 | [.claude/rules/playwright.md](.claude/rules/playwright.md) | e2e and axe |
@@ -31,13 +31,14 @@ Read a library's file before working with it. The first line of each file names 
 ## Where things are
 
 - `src/proxy.ts`: every request but `/api/*` (reserved for the API proxy, see next-example) gets a request id and `x-app-version`; pages also get the nonce CSP, the locale (`?lang=` > cookie > English) and `x-pathname` for metadata. With accounts on, a page visit with the session cookie also keeps it fresh and asks id-api once who the person is and whether the session still stands.
-- `src/app/`: routes. `layout.tsx` holds shared metadata and JSON-LD (`WebSite`, `Person`); `page.tsx` is the main page, `privacy/` and `terms/` the legal texts, `auth/` sign-out; `health/live` and `health/ready` are the probes.
-- `src/lib/contacts.ts`: the owner's public profiles (page, footer, JSON-LD).
+- `src/app/`: routes. `layout.tsx` holds shared metadata and JSON-LD (`WebSite`, `Person`); `page.tsx` is the main page, `platform/[part]`, `blog/`, `blog/[slug]` and `tools/` its inner pages, `privacy/` and `terms/` the legal texts, `auth/` sign-out; `health/live` and `health/ready` are the probes.
+- `src/lib/contacts.ts`: the owner's public profiles (page, footer, JSON-LD). `src/lib/content.ts`: ids, order, tech names, links and dates of the platform parts, notes and tools; their words are in the catalogs under the same ids.
+- `src/components/nl/`: the NL logo, a WebGL canvas behind the home page (`scene.ts`, `shaders.ts`, textures in `public/nl/`), and the intro on the first load of `/` (`nl-stage.tsx`). three.js loads only on the home page. `src/components/route-roulette.tsx`: the roulette between pages. `src/components/wordmark/`: the NICK LUKASHIK wordmark, its letters float in the hero.
 - `src/lib/session/`: the sealed session cookie shared with the account site, and the calls to id-api ("Accounts" in the README).
 - `src/lib/env/`: env through Zod, `server.ts` (server only, read at startup). No `NEXT_PUBLIC_*`: one image runs on stage and prod, so nothing environment-specific is inlined at build time (`ROBOTS` is runtime env too).
 - `src/lib/security/`: CSP and static headers. `src/lib/seo/`: alternates, robots, Open Graph.
 - `src/i18n/`: locales, locale resolution, next-intl config, catalogs `messages/{en,ru}.json`.
-- `src/components/ui/`: shadcn/ui components (source, owned here). `src/components/`: header, footer, language switch.
+- `src/components/ui/`: shadcn/ui components (source, owned here, restyled). `src/components/`: header, footer, language switch, page blocks.
 - `e2e/`: Playwright; `servers.ts` holds the test servers' ports.
 
 ## Conventions
@@ -45,7 +46,7 @@ Read a library's file before working with it. The first line of each file names 
 - A backend is added only when a page needs its data, by copying the API capability from `next-example` with its tests; never a stub "for later". Its rules (`/api` on the same origin only, the header allow-list, `docs/auth.md`) come with it.
 - A page exports only `title` and `description` through `generateMetadata` + `getTranslations`; the root layout sets canonical, hreflang and `og:url`.
 - All text lives in `src/i18n/messages/en.json` and `ru.json` with the same keys (a unit test checks it). Write Russian copy by hand, not machine-translated.
-- UI comes from shadcn/ui (`pnpm exec shadcn add <name>`), see `.claude/rules/shadcn.md`. One light theme: colours are tokens from `src/app/globals.css`, no `dark:` classes (a unit test checks it), AA contrast. No server-rendered `style={...}`: the CSP blocks inline styles.
+- UI comes from shadcn/ui (`pnpm exec shadcn add <name>`), see `.claude/rules/shadcn.md`. One theme, black and white (Mono Brutal): colours are tokens from `src/app/globals.css`, no `dark:` classes (a unit test checks it), AA contrast. Motion (intro, roulette, floating letters, scroll reveal) stops with `prefers-reduced-motion`; e2e runs with it on, `e2e/motion.spec.ts` without. No server-rendered `style={...}`: the CSP blocks inline styles.
 - Server modules start with `import 'server-only'`. Read `process.env` only in `src/lib/env/` (plus `APP_VERSION`/`NODE_ENV` in the proxy and instrumentation).
 - English everywhere (code, comments, docs, tests) except the product copy in `ru.json`. Comments are short and to the point.
 - Code style is Biome's (`biome.json`): 4-space indent, single quotes (double in JSX), no semicolons, trailing commas, `type` over `interface`, inline `type` imports, `T[]` arrays, kebab-case file names. Run `pnpm format`.

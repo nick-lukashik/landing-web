@@ -53,6 +53,9 @@ export default defineConfig({
           ],
     use: {
         baseURL,
+        // Without the intro and the page roulette, so every test meets the page at once;
+        // e2e/motion.spec.ts turns them back on.
+        reducedMotion: 'reduce',
         trace: 'retain-on-failure',
         screenshot: 'only-on-failure',
     },

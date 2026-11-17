@@ -1,6 +1,6 @@
 # landing-web
 
-The site on `https://nick-lukashik.com`, in English and Russian: a main page with who I am, how I work and where to reach me, the privacy policy and terms, and sign-in through the account site ([Accounts](#accounts)). Made from [`next-starter`](https://github.com/nick-lukashik/next-starter) (`.template-version`); the design is stock shadcn/ui, the text and links come from the previous site, whose repository no longer exists.
+The site on `https://nick-lukashik.com`, in English and Russian: a landing for my job search (who I am, the platform I run, notes from production, experience, how to reach me), the privacy policy and terms, and sign-in through the account site ([Accounts](#accounts)). Made from [`next-starter`](https://github.com/nick-lukashik/next-starter) (`.template-version`); the design is Mono Brutal, the NL logo is a three.js scene drawn from an AI render.
 
 Everything the starter documents applies here: commands, SEO, CSP, health probes, Docker, CI and deploy (see its README). Only what is specific to this site is below.
 
@@ -10,7 +10,10 @@ Everything the starter documents applies here: commands, SEO, CSP, health probes
 |---|---|
 | Text, both languages (same keys; a unit test checks it) | `src/i18n/messages/en.json`, `ru.json` |
 | Contacts: Telegram, LinkedIn, GitHub | `src/lib/contacts.ts` (also the footer and JSON-LD `sameAs`) |
-| The page: intro, five steps of work, contacts | `src/app/page.tsx` |
+| The main page: hero, platform, about, notes, experience, contacts | `src/app/page.tsx` |
+| Platform parts, notes, tools: ids, links, dates | `src/lib/content.ts` (words in the catalogs under the same ids) |
+| The logo: scene, shaders, textures | `src/components/nl/`, `public/nl/` (made from the approved render by a separate texture pipeline) |
+| Book-a-call link | `CALL_URL` in `src/lib/content.ts` |
 | Share card | `src/app/opengraph-image.tsx` (`meta.ogTitle`, `meta.ogTagline`) |
 | JSON-LD | `WebSite` and `Person` in `src/app/layout.tsx` |
 

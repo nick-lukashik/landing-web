@@ -2,15 +2,22 @@
     "meta": {
         "siteName": "Nick Lukashik",
         "languageName": "English",
-        "description": "Senior full-stack engineer. Web products built turnkey: interface design, frontend, backend, payments, infrastructure and monitoring, from the idea to launch and support.",
-        "ogAlt": "Nick Lukashik — Senior full-stack engineer",
+        "description": "Senior full-stack engineer, open to work. TypeScript, React, Next.js and Node.js: products end to end, and the platform this site runs on.",
+        "ogAlt": "Nick Lukashik — Senior full-stack engineer, open to work",
         "ogTitle": "Senior full-stack engineer",
-        "ogTagline": "Design · Frontend · Backend · Payments · Infrastructure"
+        "ogTagline": "Open to work · TypeScript · React · Next.js · Node.js"
     },
     "nav": {
         "skip": "Skip to content",
         "label": "Main",
         "home": "Home",
+        "platform": "Platform",
+        "about": "About",
+        "tools": "Tools",
+        "blog": "Blog",
+        "experience": "Experience",
+        "bookCall": "Book a call",
+        "menu": "Menu",
         "language": "Language",
         "signIn": "Sign in",
         "account": "Account",
@@ -21,51 +28,554 @@
         "role": "Senior full-stack engineer",
         "version": "Version {version}",
         "links": "Contacts",
-        "legal": "About this site"
+        "legal": "About this site",
+        "hosted": "Built and hosted on my own platform"
+    },
+    "intro": {
+        "booting": "Booting platform ···",
+        "skip": "Skip intro",
+        "replay": "Replay intro"
+    },
+    "roulette": {
+        "opening": "Opening → {name}",
+        "home": "Home",
+        "homeHint": "index",
+        "tools": "Tools",
+        "toolsHint": "how I work",
+        "blog": "Blog",
+        "blogHint": "notes",
+        "platformHint": "platform",
+        "postHint": "blog",
+        "pageHint": "page",
+        "site": "nick-lukashik.com"
     },
     "home": {
         "meta": {
-            "title": "Nick Lukashik — Senior full-stack engineer",
-            "description": "Senior full-stack engineer. Web products built turnkey: interface design, frontend, backend, payments, infrastructure and monitoring, from the idea to launch and support."
+            "title": "Nick Lukashik — Senior full-stack engineer, open to work",
+            "description": "Senior full-stack engineer, 6+ years with TypeScript, React, Next.js and Node.js. Open to senior full-stack and AI product roles."
         },
-        "role": "Senior full-stack engineer",
-        "heading": "I’ll build the whole thing.",
-        "lead": "From first idea to live product: design, code, payments and launch.",
-        "cta": "Discuss a project",
-        "process": {
-            "title": "Clear steps, visible progress.",
-            "intro": "Every stage ends with something you can open and check, not a status report.",
-            "steps": {
-                "discovery": {
-                    "title": "Discovery",
-                    "body": "Goals, users, constraints and the smallest version worth launching."
+        "role": "Senior full-stack engineer · open to work",
+        "heading": "Nick Lukashik",
+        "lead": "Senior full-stack engineer, 6+ years with TypeScript, React, Next.js and Node.js. I own products end to end, and I run the platform this site lives on. Looking for my next senior full-stack or AI product role.",
+        "cta": "Book a 30-min call",
+        "ticker": [
+            "Platform live",
+            "10 services in production",
+            "K3s · Argo CD · GitOps",
+            "Postgres PITR 14 days",
+            "28 failure tests every night",
+            "ES256 · passkeys",
+            "Outbox · inbox · DLQ",
+            "Open to work"
+        ],
+        "platform": {
+            "label": "01 · Platform",
+            "title": "The nick-lukashik platform",
+            "intro": "One server, Kubernetes, GitOps. Every part below runs in production and the code is public. Each part grew out of a problem I first met at work.",
+            "archLabel": "Platform architecture: Cloudflare, Traefik and K3s in front of the web apps, the APIs, Postgres, RabbitMQ and Redis",
+            "why": "Why",
+            "more": "Read more"
+        },
+        "about": {
+            "label": "02 · About",
+            "title": "About me",
+            "intro": "The short version: I like owning a thing end to end and then watching people actually use it.",
+            "stats": [
+                {
+                    "value": "6+",
+                    "label": "years of commercial full-stack work"
                 },
-                "design": {
-                    "title": "Design",
-                    "body": "Key flows and screens first, then the architecture and the data model."
+                {
+                    "value": "1M+",
+                    "label": "monthly users on the product I work on at Printify"
                 },
-                "build": {
-                    "title": "Build",
-                    "body": "Short iterations: frontend, backend, payments, integrations and tests together."
-                },
-                "launch": {
-                    "title": "Launch",
-                    "body": "Production setup (domain, CI/CD, monitoring, alerts and backups), then the release."
-                },
-                "support": {
-                    "title": "Support",
-                    "body": "Fixes, improvements and new features, with an eye on metrics and alerts."
+                {
+                    "value": "0 → 1",
+                    "label": "B2B ordering product taken from idea to production"
                 }
+            ],
+            "text": [
+                "I have been writing code since I was 12. It started with websites for Counter-Strike servers and somehow never stopped. Now it is <b>6+ years of commercial full-stack work</b>, mostly TypeScript, React, Next.js and Node.js with Postgres.",
+                "At Printify I took a whole B2B ordering product from an idea to production with a small team. That is the kind of work I like most.",
+                "I work <b>AI-first</b>: coding agents write most of the code, with my own rules and skills, Jira and Confluence plugged in through MCP. I still review every step, because the agent is fast but I am the one who gets the call when prod breaks."
+            ],
+            "facts": {
+                "cycling": {
+                    "title": "Cycling",
+                    "body": "Built my own bike from parts. On the bike I cut seconds, at work milliseconds."
+                },
+                "drone": {
+                    "title": "My drone",
+                    "body": "Built it from parts and tuned it myself, from the frame and motors to the flight settings.",
+                    "photos": "Photos coming"
+                },
+                "routine": {
+                    "title": "A routine that works",
+                    "body": "Years of building a daily routine and learning what boosts my focus and what kills it. It is the reason I can keep a steady pace for months."
+                }
+            },
+            "sheet": {
+                "title": "What I am looking for",
+                "rows": [
+                    {
+                        "term": "Role",
+                        "value": "Senior full-stack engineer · AI product engineer"
+                    },
+                    {
+                        "term": "Stack",
+                        "value": "TypeScript, React, Next.js, Node.js, NestJS, Python, Postgres"
+                    },
+                    {
+                        "term": "Format",
+                        "value": "Remote · open to work as a contractor"
+                    },
+                    {
+                        "term": "Location",
+                        "value": "Georgia · UTC+4 · overlaps with Europe"
+                    },
+                    {
+                        "term": "English",
+                        "value": "C1"
+                    },
+                    {
+                        "term": "Notice",
+                        "value": "10 working days"
+                    }
+                ]
             }
         },
+        "notes": {
+            "label": "03 · Blog",
+            "title": "Notes from production",
+            "intro": "Short write-ups of what broke, what I built and what I would do differently. Real incidents from my own platform, no tutorials.",
+            "all": "All notes"
+        },
+        "experience": {
+            "label": "04 · Experience",
+            "title": "Experience",
+            "intro": "Remote since day one, from Georgia (UTC+4).",
+            "jobs": [
+                {
+                    "when": "2025 — now",
+                    "company": "Toggle",
+                    "role": "AI Full-Stack Engineer",
+                    "body": "Applied LLM products for clients: agent workflows, retrieval and GPU inference, from prototype to production.",
+                    "wins": [
+                        "Self-hosted LLM inference",
+                        "Agent workflow orchestration",
+                        "MCP support agent",
+                        "Document-grounded retrieval",
+                        "LLM safety layer"
+                    ]
+                },
+                {
+                    "when": "2023 — now",
+                    "company": "Printify",
+                    "role": "Senior Full-Stack Engineer",
+                    "body": "Print-on-demand e-commerce with 1M+ monthly users. Took a B2B ordering product from idea to production with a small team.",
+                    "wins": [
+                        "B2B product launch",
+                        "Stripe payments with a QR method",
+                        "Reliable event processing",
+                        "Operations platform consolidation",
+                        "Mobile performance",
+                        "AI coding agents for the team"
+                    ]
+                },
+                {
+                    "when": "2022 — 2023",
+                    "company": "Kommo",
+                    "role": "Software Engineer",
+                    "body": "Global CRM for small businesses: messaging, lead notifications and customer communication.",
+                    "wins": [
+                        "Lead notification wizard",
+                        "Messaging provider contracts",
+                        "Resumable data imports",
+                        "Tenant permissions"
+                    ]
+                },
+                {
+                    "when": "2021 — 2022",
+                    "company": "FridayTech",
+                    "role": "Full-Stack Engineer",
+                    "body": "E-commerce fulfilment in Latin America: checkout, shipping and admin flows.",
+                    "wins": [
+                        "Checkout BFF",
+                        "Shipping provider abstraction",
+                        "Shared React library",
+                        "Validated API contracts"
+                    ]
+                },
+                {
+                    "when": "2020 — 2021",
+                    "company": "AdviceSolution",
+                    "role": "Software Engineer",
+                    "body": "Landing pages and internal tools for a computer repair company. My first commercial job.",
+                    "wins": []
+                }
+            ]
+        },
         "contact": {
-            "title": "Good things start with a conversation.",
-            "description": "Tell me what you want to build or fix: a few lines are enough. I'm open to discussing your project and working on it.",
-            "reply": "I usually reply within a day.",
+            "label": "Open to senior full-stack and AI roles",
+            "title": "Let's talk",
+            "description": "A few lines are enough. I usually reply within a day.",
+            "book": "Book a 30-min call",
+            "write": "Write in Telegram",
             "telegram": "Telegram",
             "linkedin": "LinkedIn",
             "github": "GitHub",
+            "platform": "GitHub",
             "opensInNewTab": "opens in a new tab"
+        }
+    },
+    "platform": {
+        "crumb": "Platform",
+        "how": "How it works",
+        "trade": "Trade-offs",
+        "proof": "Proof",
+        "why": "Why it is built this way",
+        "code": "Code",
+        "previous": "Previous: {name}",
+        "next": "Next: {name}",
+        "parts": {
+            "infrastructure": {
+                "name": "Infrastructure",
+                "why": "One node, only 443 open",
+                "title": "One server, production rules",
+                "intro": "The whole platform lives on one VPS running K3s. Cloudflare sits in front, everything else is closed.",
+                "how": [
+                    "Cloudflare proxy in front, port 443 open only to Cloudflare ranges, with Authenticated Origin Pulls",
+                    "SSH and the Kubernetes API reachable only over Tailscale",
+                    "nftables firewall, SSH hardening and unattended upgrades from bootstrap scripts",
+                    "Cloudflare DNS, TLS, redirects, R2 buckets and the GitHub org itself described in Terraform"
+                ],
+                "trade": [
+                    "One node: a hardware failure takes everything down. Recovery is drilled instead of paying for a second node",
+                    "Kernel updates wait for a manual reboot at a quiet hour"
+                ],
+                "proof": [
+                    "etcd snapshots and Postgres backups go to Cloudflare R2",
+                    "A written recovery runbook with RPO and RTO targets"
+                ],
+                "reason": "I wanted to own every layer, so the whole platform runs on one small server: cheap to keep, nothing hidden behind a managed service, and every failure is mine to understand. Recovery is drilled instead of paying for a second node."
+            },
+            "gitops": {
+                "name": "GitOps & CI",
+                "why": "Nothing changes by hand",
+                "title": "Deploy is a merged pull request",
+                "intro": "Nothing is applied to the cluster by hand. The cluster follows a public Git repository.",
+                "how": [
+                    "A service merges to master, CI builds an image and pushes it to GHCR by digest",
+                    "A bot opens a PR in gitops with the new digest, I read the diff and merge",
+                    "Argo CD syncs the cluster, then a smoke check runs against production",
+                    "Every service calls the same reusable org workflows by tag, no copy-pasted pipelines"
+                ],
+                "trade": [
+                    "A human merge on every deploy is slower, and that is on purpose",
+                    "The gitops repo is public, so only Sealed Secrets live there"
+                ],
+                "proof": [
+                    "Nightly failure tests: 28 scenarios against the deployed set",
+                    "Branch rulesets on master: PR and approval, no bypass"
+                ],
+                "reason": "Every change to the cluster is a reviewed pull request. Rolling back is a git revert, and the history shows who changed what and why."
+            },
+            "starters": {
+                "name": "Starters",
+                "why": "A new service in an afternoon",
+                "title": "New services start from a template",
+                "intro": "Two starters and two full examples. A new service starts small and copies only the capabilities it needs.",
+                "how": [
+                    "next-starter: SEO, EN and RU, strict CSP with nonce, shadcn/ui, health probes, Vitest, Playwright and axe",
+                    "nest-starter: config, JSON logs, health, metrics, Postgres with Drizzle, Zod validation, OpenAPI",
+                    "next-example and nest-example hold the rest: API proxy, TanStack Query, Redis, pg-boss jobs, RabbitMQ with outbox",
+                    "One service contract: port, user, probes, limits and time budgets every image must follow"
+                ],
+                "trade": ["Shared code is copied, not imported, until several services really need it as a package"],
+                "proof": [
+                    "Starters and examples are verified in CI on every change",
+                    "Integration tests run against real Postgres with Testcontainers"
+                ],
+                "reason": "Every service starts from the same template, so on day one it already has health checks, logs, metrics, tests and a deploy pipeline instead of getting them in week three."
+            },
+            "identity": {
+                "name": "Identity",
+                "why": "One sign-in, no tokens in the browser",
+                "title": "One sign-in for every site",
+                "intro": "id.nick-lukashik.com signs people in once; the other sites sign in through it and keep their own session.",
+                "how": [
+                    "Sign-in by email code, Google or passkey",
+                    "Short ES256 access tokens, five minutes, checked by every API against JWKS",
+                    "Refresh tokens rotate; reusing an old one ends the session",
+                    "The browser never sees a token: the session is a sealed HttpOnly cookie"
+                ],
+                "trade": [
+                    "A lost response during refresh is handled explicitly instead of logging the person out",
+                    "Rate limits on email codes, so a mail quota cannot lock everyone out"
+                ],
+                "proof": ["End-to-end tests for sign-in across two sites and refresh races"],
+                "reason": "Sign-in is the part people trust you with the most, so it gets the strictest rules: short-lived tokens, rotation, and nothing sensitive reachable from JavaScript."
+            },
+            "events": {
+                "name": "Events",
+                "why": "Nothing lost between DB and broker",
+                "title": "Events that never get lost",
+                "intro": "Services talk through RabbitMQ, and no event is lost between the database and the broker.",
+                "how": [
+                    "The event is written to an outbox table in the same transaction as the data",
+                    "A relay publishes the outbox to RabbitMQ",
+                    "Consumers record every message in an inbox, so a repeat is applied once",
+                    "Failed messages go to a dead-letter queue and can be replayed with one command"
+                ],
+                "trade": [
+                    "At-least-once delivery, so every handler has to be idempotent",
+                    "More tables and moving parts than a plain HTTP call"
+                ],
+                "proof": ["Nightly tests stop RabbitMQ, Postgres and Redis and check that nothing is lost"],
+                "reason": "Distributed systems break in the gaps between services. The outbox and inbox close those gaps, and nightly tests prove it by breaking things on purpose."
+            },
+            "payments": {
+                "name": "Payments & wallet",
+                "why": "Every coin accounted for",
+                "title": "Money that adds up",
+                "intro": "A coin wallet with an append-only ledger, and a payment service in front of it.",
+                "how": [
+                    "Append-only ledger with double entry; rows are never updated or deleted",
+                    "Every credit and debit carries a reference, so a retry cannot pay twice",
+                    "Webhooks check the provider signature first and the amount against the order snapshot",
+                    "Reconciliation against the wallet and against the provider"
+                ],
+                "trade": ["The payment service is built but not live yet: the provider is still being chosen"],
+                "proof": ["Tests for duplicate references, truncation attempts and replayed webhooks"],
+                "reason": "Money code has to be boring: append-only, idempotent, reconciled. A retry, a replayed webhook or a crash halfway through can never create or lose a coin."
+            },
+            "llm-gateway": {
+                "name": "LLM gateway",
+                "why": "Every model behind one API",
+                "title": "Every model behind one API",
+                "intro": "A shared service that gives every project the same OpenAI-compatible API to several models.",
+                "how": [
+                    "/v1/chat/completions and /v1/models, JSON schema output, reasoning effort per call",
+                    "Synchronous calls and background jobs for long ones",
+                    "A key per client with an allow-list of models, plus a network policy",
+                    "Full request log kept for 14 days, then deleted"
+                ],
+                "trade": [
+                    "Runs as a single replica because of the provider sign-ins, an exception to the platform rule"
+                ],
+                "proof": [
+                    "Other services on the platform call it in production",
+                    "Request log kept for 14 days, then deleted automatically"
+                ],
+                "reason": "Every project wants an LLM, and none of them should deal with keys, limits and providers on its own. One gateway gives them the same API and one place to log and control usage."
+            },
+            "observability": {
+                "name": "Observability",
+                "why": "Alerts straight to Telegram",
+                "title": "I know before users do",
+                "intro": "Metrics, logs and alerts live in the cluster and talk to me in Telegram.",
+                "how": [
+                    "kube-prometheus-stack for metrics and alert rules, each alert with a runbook",
+                    "Loki and Alloy for logs, stored in R2",
+                    "Alerts go to a Telegram topic; a dead man's switch pings Healthchecks every few minutes",
+                    "Argo CD reports a degraded app to the same chat"
+                ],
+                "trade": ["Some alerts are still noisy, and tuning them is ongoing work"],
+                "proof": ["Alert rules have unit tests in CI"],
+                "reason": "If something breaks, I want to know before anyone else does. Every alert has a runbook, and the monitoring lives in the same cluster as the services it watches."
+            }
+        },
+        "private": "private"
+    },
+    "blog": {
+        "meta": {
+            "title": "Blog",
+            "description": "Notes from production: what broke on my platform, how I fixed it, and the things I build along the way."
+        },
+        "crumb": "Blog",
+        "title": "Notes from production",
+        "intro": "What broke on my platform, how I fixed it, and the things I build along the way. Written for engineers, short enough to read with a coffee.",
+        "filter": "Filter notes by topic",
+        "all": "All",
+        "minutes": "{minutes} min",
+        "readTime": "{minutes} min read",
+        "tldr": "TL;DR",
+        "previous": "Previous note: {title}",
+        "next": "Next note: {title}",
+        "tags": {
+            "observability": "Observability",
+            "k3s": "K3s",
+            "webgl": "WebGL",
+            "three": "Three.js",
+            "ai": "AI",
+            "testing": "Testing",
+            "reliability": "Reliability"
+        },
+        "posts": {
+            "alerts-noise": {
+                "title": "My alerts channel screamed every four hours",
+                "lead": "Two alerts kept firing in Telegram all weekend. Neither meant the site was down, and that is exactly the problem.",
+                "tldr": [
+                    "NodeRebootRequired: the server installs security updates itself but never reboots itself, so the alert repeats every 4 hours until someone does.",
+                    "AlertmanagerFailedToSendAlerts: one lost “I am alive” ping out of four to Healthchecks is 25%, and the default rule calls that critical.",
+                    "An alert that fires and then resolves itself ten minutes later teaches you to ignore alerts. That is worse than no alert."
+                ],
+                "body": [
+                    {
+                        "h": "What I saw"
+                    },
+                    {
+                        "p": "Over two days the ops topic got NodeRebootRequired roughly every four hours, plus a CRITICAL AlertmanagerClusterFailedToSendAlerts that resolved itself ten minutes later, several times. On the same night the nightly failure tests went red once."
+                    },
+                    {
+                        "h": "Reboot required"
+                    },
+                    {
+                        "p": "Unattended upgrades install security patches on the node. Some of them, usually the kernel, only take effect after a reboot. The node is configured to never reboot by itself: a single-node cluster that restarts at a random moment is an outage I did not schedule."
+                    },
+                    {
+                        "p": "So a small timer writes node_reboot_required to the node-exporter textfile collector, and an alert fires after 24 hours. Alertmanager then repeats it every repeat_interval, which is four hours. The fix is boring: reboot at a quiet hour, check the nodes and the site."
+                    },
+                    {
+                        "h": "Failed to send"
+                    },
+                    {
+                        "p": "Alertmanager has two receivers. Telegram worked the whole time. The other one is a dead man's switch: every four minutes the cluster pings Healthchecks, and if the pings stop, Healthchecks tells me the whole monitoring stack is gone."
+                    },
+                    {
+                        "code": "- receiver: healthchecks\n  matchers: ['alertname = \"Watchdog\"']\n  group_interval: 1m\n  repeat_interval: 4m"
+                    },
+                    {
+                        "p": "One ping in a window of four timed out on the way out. 1 of 4 is 25%, 1 of 3 is 33%, 1 of 2 is 50%: exactly the numbers in the messages. The rule from kube-prometheus-stack treats any failure towards a critical integration as critical."
+                    },
+                    {
+                        "h": "What I am changing"
+                    },
+                    {
+                        "ul": [
+                            "Reboots go into a fixed weekly window instead of waiting for me to notice.",
+                            "The send-failure rule for the dead man's switch only fires when pings fail for a sustained period, not on a single timeout.",
+                            "Argo CD gets a recovered message too, so a Degraded alert is never left hanging."
+                        ]
+                    },
+                    {
+                        "p": "The rule I keep coming back to: every alert must mean “do something now”. If the honest answer is “wait, it will pass”, it is not an alert, it is a log line."
+                    }
+                ]
+            },
+            "liquid-logo": {
+                "title": "Turning one AI image into a live 3D logo",
+                "lead": "The NL on the first screen started as a single picture from ChatGPT. Here is how it learned to write itself.",
+                "tldr": [
+                    "A real 3D model of the letters looked like an inflated balloon. The picture already had the material I wanted, so I animated the picture.",
+                    "From the image I compute the stroke centre lines, the order a pen would write them in, and a relief. Three small textures drive one shader.",
+                    "The result keeps the exact look of the render, still turns in 3D and draws itself in about two seconds."
+                ],
+                "body": [
+                    {
+                        "h": "The first attempt"
+                    },
+                    {
+                        "p": "I traced the calligraphy into curves and swept a tube along them. Technically correct, visually wrong: smooth tubes, rings where strokes met, and none of the liquid chrome that made the original image good."
+                    },
+                    {
+                        "h": "Keep the picture, add the data"
+                    },
+                    {
+                        "p": "So I went the other way. Codex generated the same monogram on a transparent background. From its alpha I build a distance field, find the centre line of each of the three pen strokes and assign every pixel to a stroke and a position along it."
+                    },
+                    {
+                        "ul": [
+                            "Texture one: surface normals and a relief height, from the distance field.",
+                            "Texture two: which stroke a pixel belongs to and how far along it is.",
+                            "Texture three: a smooth depth per stroke, so loops pass in front of each other when the logo turns."
+                        ]
+                    },
+                    {
+                        "h": "Writing it"
+                    },
+                    {
+                        "p": "A shader compares each pixel's position along its stroke with the pen's progress. Behind the pen the metal swells up from nothing, wobbles and settles. A bead of liquid rolls at the tip and throws small drops that bounce on the floor."
+                    },
+                    {
+                        "h": "After the intro"
+                    },
+                    {
+                        "p": "A light drifts above the logo, so the highlights move by themselves. The floor is a dark water mirror: sharp right under the letters, broken by slow ripples further out. The cursor tilts the piece and sends a ripple through the metal."
+                    }
+                ]
+            },
+            "failure-tests": {
+                "title": "Breaking my platform on purpose, every night",
+                "lead": "Each night a robot stops Postgres, RabbitMQ, Redis and mail under my real services and checks that nothing is lost.",
+                "tldr": [
+                    "The images under test are the exact digests deployed to production, started together in Docker Compose.",
+                    "Scenarios: database down, broker down, Redis down, SMTP down, concurrent sign-ins, replayed payment webhooks, and a log check.",
+                    "The result lands in Telegram before I wake up."
+                ],
+                "body": [
+                    {
+                        "h": "Why"
+                    },
+                    {
+                        "p": "Unit tests prove a function works. They do not prove that a sign-in survives the broker restarting in the middle of it. That kind of bug only shows up when real services fail in real order."
+                    },
+                    {
+                        "h": "How it runs"
+                    },
+                    {
+                        "p": "A scheduled GitHub Actions workflow in the gitops repository reads the image digests from the production manifests, starts the whole set with Postgres, Redis, RabbitMQ and a fake mail server, and runs Playwright scenarios against it."
+                    },
+                    {
+                        "code": "on:\n  schedule:\n    - cron: '37 2 * * *'"
+                    },
+                    {
+                        "ul": [
+                            "postgres-down: requests fail fast and the service recovers when the database is back.",
+                            "broker-down: events wait in the outbox and are delivered later, once.",
+                            "smtp-down: sign-in codes are retried, never logged.",
+                            "payment-replay: the same webhook twice credits the wallet once."
+                        ]
+                    },
+                    {
+                        "h": "When it is red"
+                    },
+                    {
+                        "p": "Serial, no retries, strict timeouts: a slow runner can turn it red. That is a trade I accept. A flaky red run costs me five minutes; a hidden race in production costs much more."
+                    }
+                ]
+            }
+        }
+    },
+    "tools": {
+        "meta": {
+            "title": "Tools",
+            "description": "What I use every day, and what each tool is actually for."
+        },
+        "crumb": "Tools",
+        "title": "Tools — how I work",
+        "intro": "What I use every day, and what each tool is actually for. AI does the typing; I own the decisions and the review.",
+        "filter": "Filter tools by area",
+        "all": "All",
+        "categories": {
+            "ai": "AI",
+            "delivery": "Delivery",
+            "infra": "Infra",
+            "observability": "Observability"
+        },
+        "items": {
+            "claude-code": "Writes most of the code, under my own rules and skills",
+            "codex": "A second agent, and image generation for this site",
+            "mcp": "Jira and Confluence inside the agent",
+            "github-actions": "Reusable org workflows, called by tag",
+            "argo-cd": "Deploy is a merged pull request",
+            "playwright": "End-to-end and nightly failure tests",
+            "terraform": "Cloudflare and the GitHub org as code",
+            "k3s": "One node, production rules",
+            "cloudflare": "DNS, TLS, redirects, R2 backups",
+            "bitwarden": "Secrets by name only, Sealed Secrets in the cluster",
+            "grafana": "Dashboards and logs from Loki",
+            "prometheus": "Alert rules with tests, alerts to Telegram"
         }
     },
     "error": {

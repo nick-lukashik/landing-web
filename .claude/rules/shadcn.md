@@ -15,15 +15,15 @@ component's docs and examples, and `pnpm exec shadcn mcp init` sets up the shadc
 - Primitives come from the `radix-ui` package (`import { Slot } from 'radix-ui'`). Icons from `lucide-react`.
 - The CLI is a pinned devDependency: run `pnpm exec shadcn ...`, not `pnpm dlx shadcn@latest` (Renovate
   updates the pin). `shadcn/tailwind.css` and `tw-animate-css` are imported by `src/app/globals.css`.
-- Installed: button, card. next-example also has input, textarea, label, field, separator, skeleton, sonner.
+- Installed: button (restyled for the Mono Brutal theme). next-example also has input, textarea, label, field, separator, skeleton, sonner.
 
 ## Adding or updating a component
 
 1. `pnpm exec shadcn add <name>` (`--dry-run` / `--diff` to preview; `--overwrite` to replace a local copy,
    which discards our edits).
 2. Delete every `dark:` class it brought, and any `.dark` block it added to `globals.css`. The site has one
-   light theme, and without a `.dark` variant Tailwind would apply `dark:` when the OS is dark.
-   `src/app/light-theme.test.ts` fails until they are gone.
+   theme, and without a `.dark` variant Tailwind would apply `dark:` when the OS is dark.
+   `src/app/one-theme.test.ts` fails until they are gone.
 3. `pnpm format`, then fix what Biome still reports in the code (never loosen `biome.json`).
 4. Check the CSP (below), then `pnpm verify` and `pnpm test:e2e`.
 
@@ -36,7 +36,7 @@ component's docs and examples, and `pnpm exec shadcn mcp init` sets up the shadc
 - Toasts: Sonner, added with the API (next-example): `<Toaster>` in `src/app/providers.tsx`, its stylesheet hash
   in the CSP.
 - Colours: only the tokens in `globals.css` (`bg-background`, `text-muted-foreground`, `text-destructive`,
-  `border-input`, ...). A component that needs a new token: add it there, light value only, AA contrast.
+  `border-input`, ...). A component that needs a new token: add it there, one value only, AA contrast.
 - Every visible or accessible string comes from next-intl, including labels shadcn hardcodes (for example
   the `Spinner` component's `aria-label="Loading"`; use a `lucide-react` icon instead).
 

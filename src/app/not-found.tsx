@@ -16,9 +16,9 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function NotFound() {
     const t = await getTranslations('notFound')
     return (
-        <section className="mx-auto grid max-w-xl gap-4 py-10 text-center">
+        <section className="mx-auto grid max-w-xl gap-4 px-5 py-24 text-center">
             <p className="font-mono text-sm text-muted-foreground">404</p>
-            <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
+            <h1 className="display text-6xl">{t('title')}</h1>
             <p className="text-muted-foreground">{t('body')}</p>
             <div className="flex flex-wrap justify-center gap-3">
                 <Button asChild>
