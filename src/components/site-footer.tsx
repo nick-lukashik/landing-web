@@ -3,35 +3,40 @@ import { getTranslations } from 'next-intl/server'
 import { contacts } from '@/lib/contacts'
 import { serverEnv } from '@/lib/env/server'
 
+const link = 'label hover:text-foreground'
+
 export async function SiteFooter() {
     const t = await getTranslations()
     return (
-        <footer className="mt-16 border-t">
-            <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-4 py-6 text-sm text-muted-foreground">
-                <p>
-                    {t('meta.siteName')} · {t('footer.role')}
+        <footer className="relative z-[2] border-t border-foreground bg-background">
+            <div className="wrap flex flex-wrap items-center justify-between gap-x-8 gap-y-4 py-7 text-muted-foreground">
+                <p className="label">
+                    {t('meta.siteName')} · {t('footer.hosted')}
                 </p>
                 <nav aria-label={t('footer.links')}>
-                    <ul className="flex flex-wrap gap-4">
+                    <ul className="flex flex-wrap gap-5">
                         {contacts.map(contact => (
                             <li key={contact.key}>
                                 <a
-                                    className="underline-offset-4 hover:underline"
+                                    className={link}
                                     href={contact.href}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
                                     {t(`home.contact.${contact.key}`)}
+                                    {contact.key === 'platform' || contact.key === 'github'
+                                        ? ` · ${contact.handle}`
+                                        : ''}
                                 </a>
                             </li>
                         ))}
                     </ul>
                 </nav>
                 <nav aria-label={t('footer.legal')}>
-                    <ul className="flex flex-wrap gap-4">
+                    <ul className="flex flex-wrap gap-5">
                         <li>
                             <Link
-                                className="underline-offset-4 hover:underline"
+                                className={link}
                                 href="/privacy"
                             >
                                 {t('privacy.title')}
@@ -39,7 +44,7 @@ export async function SiteFooter() {
                         </li>
                         <li>
                             <Link
-                                className="underline-offset-4 hover:underline"
+                                className={link}
                                 href="/terms"
                             >
                                 {t('terms.title')}
@@ -47,7 +52,7 @@ export async function SiteFooter() {
                         </li>
                     </ul>
                 </nav>
-                <p>
+                <p className="label">
                     {t('footer.version', {
                         version: serverEnv.APP_VERSION,
                     })}

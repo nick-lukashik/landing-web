@@ -1,24 +1,9 @@
 import { contacts } from '../src/lib/contacts'
+import { CALL_URL } from '../src/lib/content'
 import { en, expect, ru, test } from './fixtures'
 
 test.describe('landing', () => {
-    test('the call to action leads to the contacts', async ({ page }) => {
-        await page.goto('/?lang=en')
-        await page
-            .getByRole('link', {
-                name: en.home.cta,
-            })
-            .click()
-        await expect(page).toHaveURL(/#contact$/)
-        await expect(
-            page.getByRole('heading', {
-                level: 2,
-                name: en.home.contact.title,
-            }),
-        ).toBeInViewport()
-    })
-
-    test('every contact opens the profile in a new tab, in both languages', async ({ page }) => {
+    test('the call to action books a call, in both languages', async ({ page }) => {
         for (const [lang, messages] of [
             [
                 'en',
@@ -30,16 +15,76 @@ test.describe('landing', () => {
             ],
         ] as const) {
             await page.goto(`/?lang=${lang}`)
-            const section = page.locator('#contact')
+            await expect(
+                page.getByRole('heading', {
+                    level: 1,
+                    name: messages.home.heading,
+                }),
+            ).toBeVisible()
+            await expect(
+                page
+                    .getByRole('region', {
+                        name: messages.home.heading,
+                    })
+                    .getByRole('link', {
+                        name: messages.home.cta,
+                    }),
+            ).toHaveAttribute('href', CALL_URL)
+        }
+    })
+
+    test('every profile opens in a new tab, in both languages', async ({ page }) => {
+        for (const [lang, messages] of [
+            [
+                'en',
+                en,
+            ],
+            [
+                'ru',
+                ru,
+            ],
+        ] as const) {
+            await page.goto(`/?lang=${lang}`)
+            const profiles = page.locator('#contact').getByRole('list')
             for (const contact of contacts) {
-                const link = section.getByRole('link', {
-                    name: new RegExp(messages.home.contact[contact.key]),
+                const link = profiles.getByRole('link', {
+                    name: new RegExp(`^${messages.home.contact[contact.key]}`),
                 })
-                await expect(link).toHaveAttribute('href', contact.href)
-                await expect(link).toHaveAttribute('target', '_blank')
-                await expect(link).toHaveAttribute('rel', 'noopener noreferrer')
+                await expect(link.and(page.locator(`[href="${contact.href}"]`))).toHaveAttribute('target', '_blank')
+                await expect(link.and(page.locator(`[href="${contact.href}"]`))).toHaveAttribute(
+                    'rel',
+                    'noopener noreferrer',
+                )
             }
         }
+    })
+
+    test('a platform card opens its page, and the page links to the next part', async ({ page }) => {
+        await page.goto('/?lang=en')
+        await page
+            .locator('#platform')
+            .getByRole('link', {
+                name: new RegExp(`^${en.platform.parts.events.name} `),
+            })
+            .click()
+        await expect(page).toHaveURL(/\/platform\/events$/)
+        await expect(
+            page.getByRole('heading', {
+                level: 1,
+                name: en.platform.parts.events.title,
+            }),
+        ).toBeVisible()
+        await page
+            .getByRole('link', {
+                name: en.platform.next.replace('{name}', en.platform.parts.payments.name),
+            })
+            .click()
+        await expect(page).toHaveURL(/\/platform\/payments$/)
+    })
+
+    test('an unknown platform part or note is a 404', async ({ request }) => {
+        expect((await request.get('/platform/nothing')).status()).toBe(404)
+        expect((await request.get('/blog/nothing')).status()).toBe(404)
     })
 
     test('JSON-LD names the person and links the profiles', async ({ page }) => {

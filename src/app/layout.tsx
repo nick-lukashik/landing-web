@@ -2,13 +2,21 @@ import { type Metadata, type Viewport } from 'next'
 import { cookies, headers } from 'next/headers'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getTranslations } from 'next-intl/server'
+import '@fontsource/martian-mono/400.css'
+import '@fontsource/martian-mono/500.css'
+import '@fontsource/martian-mono/700.css'
+import '@fontsource/sofia-sans-extra-condensed/700.css'
+import '@fontsource/sofia-sans-extra-condensed/800.css'
 import { AnalyticsConsent } from '@/components/analytics-consent'
 import { JsonLd } from '@/components/json-ld'
+import { NlStage } from '@/components/nl/nl-stage'
+import { type RoulettePage, RouteRoulette } from '@/components/route-roulette'
 import { SiteFooter } from '@/components/site-footer'
 import { SiteHeader } from '@/components/site-header'
 import { type AppLocale, defaultLocale, isLocale, locales } from '@/i18n/config'
 import { CONSENT_COOKIE, consentPressed } from '@/lib/analytics/consent'
 import { contacts } from '@/lib/contacts'
+import { PARTS, POSTS } from '@/lib/content'
 import { serverEnv } from '@/lib/env/server'
 import { NONCE_HEADER } from '@/lib/security/csp'
 import { CANONICAL_HEADER, languageAlternates, localizedPath, PATHNAME_HEADER } from '@/lib/seo/alternates'
@@ -65,10 +73,10 @@ export async function generateMetadata(): Promise<Metadata> {
     }
 }
 
-// One light theme: --background in globals.css.
+// One dark theme (Mono Brutal): --background in globals.css.
 export const viewport: Viewport = {
-    colorScheme: 'light',
-    themeColor: '#ffffff',
+    colorScheme: 'dark',
+    themeColor: '#000000',
 }
 
 /** Each language's name in that language (`meta.languageName` of its own catalog). */
@@ -88,12 +96,49 @@ async function languageNames(): Promise<Record<AppLocale, string>> {
     return Object.fromEntries(names) as Record<AppLocale, string>
 }
 
+/** Names of the pages for the roulette between them, in the reader's language. */
+async function roulettePages(): Promise<RoulettePage[]> {
+    const [t, platform, blog] = await Promise.all([
+        getTranslations('roulette'),
+        getTranslations('platform'),
+        getTranslations('blog'),
+    ])
+    return [
+        {
+            path: '/',
+            name: t('home'),
+            hint: t('homeHint'),
+        },
+        {
+            path: '/tools',
+            name: t('tools'),
+            hint: t('toolsHint'),
+        },
+        {
+            path: '/blog',
+            name: t('blog'),
+            hint: t('blogHint'),
+        },
+        ...PARTS.map(part => ({
+            path: `/platform/${part.id}`,
+            name: platform(`parts.${part.id}.name`),
+            hint: t('platformHint'),
+        })),
+        ...POSTS.map(post => ({
+            path: `/blog/${post.id}`,
+            name: blog(`tags.${post.tags[0]}`),
+            hint: t('postHint'),
+        })),
+    ]
+}
+
 export default async function RootLayout({ children }: LayoutProps<'/'>) {
-    const [locale, requestHeaders, t, names] = await Promise.all([
+    const [locale, requestHeaders, t, names, pages] = await Promise.all([
         getLocale(),
         headers(),
         getTranslations(),
         languageNames(),
+        roulettePages(),
     ])
     const nonce = requestHeaders.get(NONCE_HEADER) ?? undefined
     const site = serverEnv.SITE_URL
@@ -102,27 +147,36 @@ export default async function RootLayout({ children }: LayoutProps<'/'>) {
 
     return (
         <html lang={locale}>
-            <body className="flex min-h-dvh flex-col">
-                <a
-                    href="#main"
-                    className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:shadow"
-                >
-                    {t('nav.skip')}
-                </a>
+            <body>
                 <NextIntlClientProvider>
-                    <SiteHeader
-                        languageNames={names}
-                        account={account}
-                        accountSite={accounts?.idUrl}
-                        site={site}
-                    />
-                    <main
-                        id="main"
-                        className="mx-auto w-full max-w-5xl flex-1 px-4 py-10"
-                    >
-                        {children}
-                    </main>
-                    <SiteFooter />
+                    {/* The intro plays when the first page of a visit is the home page. */}
+                    <NlStage intro={(requestHeaders.get(PATHNAME_HEADER) ?? '/') === '/'} />
+                    <noscript>
+                        {/* Without JavaScript the intro cannot play: no overlay, the page at once. */}
+                        <style nonce={nonce}>{'#intro{display:none}.site{opacity:1!important}'}</style>
+                    </noscript>
+                    <div className="site relative z-[2] flex min-h-dvh flex-col">
+                        <a
+                            href="#main"
+                            className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-background focus:px-4 focus:py-2 focus:outline-2 focus:outline-ring"
+                        >
+                            {t('nav.skip')}
+                        </a>
+                        <SiteHeader
+                            languageNames={names}
+                            account={account}
+                            accountSite={accounts?.idUrl}
+                            site={site}
+                        />
+                        <main
+                            id="main"
+                            className="flex-1"
+                        >
+                            {children}
+                        </main>
+                        <SiteFooter />
+                    </div>
+                    <RouteRoulette pages={pages} />
                     {serverEnv.GTM_ID ? (
                         <AnalyticsConsent
                             id={serverEnv.GTM_ID}

@@ -7,9 +7,9 @@ export default function manifest(): MetadataRoute.Manifest {
         description: 'A production-ready Next.js skeleton with working examples.',
         start_url: '/',
         display: 'standalone',
-        // The light palette in globals.css (--background).
-        background_color: '#ffffff',
-        theme_color: '#ffffff',
+        // The one palette in globals.css (--background, Mono Brutal).
+        background_color: '#000000',
+        theme_color: '#000000',
         icons: [
             {
                 src: '/icon',

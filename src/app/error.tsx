@@ -17,10 +17,10 @@ export default function ErrorPage({ error, retry }: ErrorProps) {
     return (
         <section
             role="alert"
-            className="mx-auto grid max-w-xl gap-4 py-10 text-center"
+            className="mx-auto grid max-w-xl gap-4 px-5 py-24 text-center"
         >
             <title>{t('title')}</title>
-            <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
+            <h1 className="display text-6xl">{t('title')}</h1>
             <p className="text-muted-foreground">{t('body')}</p>
             {digest && (
                 <p className="font-mono text-sm text-muted-foreground">

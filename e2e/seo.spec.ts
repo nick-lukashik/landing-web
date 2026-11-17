@@ -98,11 +98,13 @@ test.describe('SEO and security', () => {
         expect(headers['x-app-version']).toBe('e2e')
         expect(headers['x-request-id']).toMatch(/^[\w-]{8,}$/)
 
-        // Every script Next.js rendered carries this response's nonce.
+        // Every script Next.js rendered carries this response's nonce. Chunks loaded later
+        // (the logo's three.js) need none: 'strict-dynamic' trusts what a nonced script loads.
         const nonce = scriptSrc.match(/'nonce-([^']+)'/)?.[1]
-        const nonces = await page
-            .locator('script')
-            .evaluateAll(scripts => scripts.map(script => (script as HTMLScriptElement).nonce))
+        const html = (await response?.text()) ?? ''
+        const nonces = [
+            ...html.matchAll(/<script\b[^>]*>/g),
+        ].map(([tag]) => tag.match(/\bnonce="([^"]*)"/)?.[1])
         expect(nonces.length).toBeGreaterThan(0)
         expect(new Set(nonces)).toEqual(
             new Set([

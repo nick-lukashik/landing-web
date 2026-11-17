@@ -10,6 +10,10 @@ const WCAG = [
 ]
 const pages = [
     '/',
+    '/platform/events',
+    '/blog',
+    '/blog/alerts-noise',
+    '/tools',
     '/privacy',
     '/terms',
     '/nowhere',

@@ -16,8 +16,8 @@ export default async function AuthErrorPage() {
     if (!accounts) notFound()
     const t = await getTranslations('authError')
     return (
-        <div className="mx-auto flex max-w-md flex-col items-start gap-4 py-10">
-            <h1 className="text-2xl font-semibold">{t('title')}</h1>
+        <div className="mx-auto flex max-w-md flex-col items-start gap-4 px-5 py-24">
+            <h1 className="display text-5xl">{t('title')}</h1>
             <p>{t('body')}</p>
             <Button asChild>
                 <a href="/">{t('back')}</a>
