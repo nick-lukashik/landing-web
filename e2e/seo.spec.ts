@@ -102,9 +102,14 @@ test.describe('SEO and security', () => {
         // (the logo's three.js) need none: 'strict-dynamic' trusts what a nonced script loads.
         const nonce = scriptSrc.match(/'nonce-([^']+)'/)?.[1]
         const html = (await response?.text()) ?? ''
-        const nonces = [
-            ...html.matchAll(/<script\b[^>]*>/g),
-        ].map(([tag]) => tag.match(/\bnonce="([^"]*)"/)?.[1])
+        // Parsed by the browser, not by a pattern; a parsed document keeps the attribute visible.
+        const nonces = await page.evaluate(
+            source =>
+                [
+                    ...new DOMParser().parseFromString(source, 'text/html').scripts,
+                ].map(script => script.getAttribute('nonce')),
+            html,
+        )
         expect(nonces.length).toBeGreaterThan(0)
         expect(new Set(nonces)).toEqual(
             new Set([
