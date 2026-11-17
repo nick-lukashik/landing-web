@@ -116,11 +116,6 @@ export function NlStage({ intro }: { intro: boolean }) {
         state,
     ])
 
-    const skip = () => {
-        scene.current?.skip()
-        finish()
-    }
-
     return (
         <>
             <div
@@ -132,19 +127,12 @@ export function NlStage({ intro }: { intro: boolean }) {
                 <div
                     id="intro"
                     data-state={state}
-                    className="fixed inset-0 z-50 grid place-items-end justify-center bg-[radial-gradient(ellipse_at_50%_45%,transparent_0%,rgb(0_0_0/0.55)_70%,#000_100%)] pb-[7vh]"
+                    className="fixed inset-0 z-[80] grid place-items-end justify-center bg-[radial-gradient(ellipse_at_50%_45%,transparent_0%,rgb(0_0_0/0.55)_70%,#000_100%)] pb-[7vh]"
                 >
                     <div aria-hidden="true">
                         <Wordmark className="intro-name mx-auto block h-auto w-[min(300px,56vw)] text-foreground" />
                         <p className="intro-boot label mt-4 text-center text-muted-foreground">{t('booting')}</p>
                     </div>
-                    <button
-                        type="button"
-                        className="label fixed right-7 bottom-6 text-muted-foreground hover:text-foreground"
-                        onClick={skip}
-                    >
-                        {t('skip')} ▸
-                    </button>
                 </div>
             ) : null}
         </>

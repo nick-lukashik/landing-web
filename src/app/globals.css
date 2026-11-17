@@ -177,8 +177,9 @@
  * with reduced motion.
  */
 @media (prefers-reduced-motion: no-preference) {
-    body:has(#intro:not([data-state="gone"])) .site {
+    body:has(#intro:not([data-state="gone"])) :is(.site, .consent) {
         opacity: 0;
+        pointer-events: none;
     }
 }
 
