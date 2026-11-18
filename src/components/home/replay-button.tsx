@@ -11,7 +11,7 @@ export function ReplayButton({ className }: { className?: string }) {
         <button
             type="button"
             className={cn(
-                'label items-center gap-2 text-muted-foreground hover:text-foreground motion-reduce:hidden',
+                'replay-intro label items-center gap-2 text-muted-foreground hover:text-foreground motion-reduce:hidden',
                 className,
             )}
             onClick={() => window.dispatchEvent(new Event(REPLAY_EVENT))}

@@ -1,8 +1,8 @@
 'use client'
 
+import { Button } from '@nick-lukashik/ui/button'
 import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
-import { Button } from '@/components/ui/button'
 import { startTagManager } from '@/lib/analytics/tag-manager'
 
 type AnalyticsConsentProps = {

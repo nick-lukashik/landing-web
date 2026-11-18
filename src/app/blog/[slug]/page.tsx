@@ -1,9 +1,10 @@
+import { Button } from '@nick-lukashik/ui/button'
+import { PageHead } from '@nick-lukashik/ui/section'
 import { type Metadata, type Route } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getFormatter, getTranslations } from 'next-intl/server'
-import { crumbLink, PageHead } from '@/components/blocks'
-import { Button } from '@/components/ui/button'
+import { crumbLink } from '@/components/blocks'
 import { findPost, POSTS } from '@/lib/content'
 
 export async function generateMetadata({ params }: PageProps<'/blog/[slug]'>): Promise<Metadata> {
@@ -94,7 +95,7 @@ export default async function PostPage({ params }: PageProps<'/blog/[slug]'>) {
     const short = (title: string) => (title.length > 34 ? `${title.slice(0, 32)}…` : title)
 
     return (
-        <article className="wrap pt-[70px] pb-16">
+        <article className="wrap pt-[70px] pb-16 wrap-break-word">
             <PageHead
                 crumbs={
                     <>
@@ -150,12 +151,14 @@ export default async function PostPage({ params }: PageProps<'/blog/[slug]'>) {
             </div>
             <nav
                 aria-label={t('crumb')}
-                className="mt-14 flex justify-between gap-4 border-t border-foreground pt-7"
+                className="mt-14 flex flex-col gap-3 border-t border-foreground pt-7 sm:flex-row sm:justify-between sm:gap-4"
             >
                 <Button
                     asChild
                     size="sm"
                     variant="outline"
+                    // A long title wraps on a phone instead of widening the page.
+                    className="h-auto min-h-[2.375rem] py-2 whitespace-normal"
                 >
                     <Link
                         href={`/blog/${previous.id}` as Route}
@@ -170,6 +173,8 @@ export default async function PostPage({ params }: PageProps<'/blog/[slug]'>) {
                     asChild
                     size="sm"
                     variant="outline"
+                    // A long title wraps on a phone instead of widening the page.
+                    className="h-auto min-h-[2.375rem] py-2 whitespace-normal"
                 >
                     <Link
                         href={`/blog/${next.id}` as Route}

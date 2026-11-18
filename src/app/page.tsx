@@ -1,12 +1,13 @@
+import { FloatingWordmark } from '@nick-lukashik/ui/brand/floating-wordmark'
+import { Button } from '@nick-lukashik/ui/button'
+import { SectionHead, Ticker } from '@nick-lukashik/ui/section'
 import { type Metadata, type Route } from 'next'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
-import { PostRow, SectionHead, Socials } from '@/components/blocks'
+import { PostRow, Socials } from '@/components/blocks'
 import { Architecture } from '@/components/home/architecture'
 import { ReplayButton } from '@/components/home/replay-button'
 import { LineIcon } from '@/components/icons'
-import { Button } from '@/components/ui/button'
-import { FloatingWordmark } from '@/components/wordmark/floating-wordmark'
 import { contacts } from '@/lib/contacts'
 import { CALL_URL, PARTS, POSTS } from '@/lib/content'
 
@@ -117,26 +118,10 @@ export default async function HomePage() {
                     </div>
                 </div>
                 <ReplayButton className="absolute right-8 bottom-14 hidden min-[980px]:inline-flex" />
-                <div
-                    aria-hidden="true"
-                    className="absolute inset-x-0 bottom-0 flex h-10 items-center overflow-hidden border-t border-foreground bg-background"
-                >
-                    <div className="ticker-track label flex gap-12 whitespace-nowrap text-muted-foreground">
-                        {[
-                            ...ticker,
-                            ...ticker,
-                        ].map((item, i) => (
-                            <span
-                                // biome-ignore lint/suspicious/noArrayIndexKey: the line repeats on purpose, so items are not unique
-                                key={i}
-                                className="flex items-center gap-2"
-                            >
-                                {i % ticker.length === 0 ? <span className="live-dot" /> : null}
-                                {item}
-                            </span>
-                        ))}
-                    </div>
-                </div>
+                <Ticker
+                    items={ticker}
+                    className="absolute inset-x-0 bottom-0"
+                />
             </section>
 
             <section

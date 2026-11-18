@@ -1,7 +1,7 @@
+import { Button } from '@nick-lukashik/ui/button'
 import { type Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
-import { Button } from '@/components/ui/button'
 import { accounts } from '@/lib/session/session'
 
 export const metadata: Metadata = {

@@ -10,7 +10,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # landing-web: rules for agents
 
-The site on nick-lukashik.com, made from `next-starter`: a job-search landing (the main page, `/platform/*`, `/blog`, `/blog/*`, `/tools`), `/privacy`, `/terms` and the account of the shared session cookie (`/auth/*`), EN/RU, one black-and-white theme (Mono Brutal) and a three.js logo intro. Stack: Next.js 16.4 (App Router, `output: 'standalone'`, React Compiler, typed routes), React 19.3, TypeScript 7 (strict), Node 26, pnpm 12, next-intl 4 (EN/RU, no locale in the URL), Zod 4, Tailwind 4, shadcn/ui (Radix), three.js (the logo), Pino, Biome, Vitest 5, Playwright 1.64 + axe. No database and no `/api` proxy of its own; with accounts on, `src/proxy.ts` and `src/lib/session/` call id-api from the server.
+The site on nick-lukashik.com, made from `next-starter`: a job-search landing (the main page, `/platform/*`, `/blog`, `/blog/*`, `/tools`), `/privacy`, `/terms` and the account of the shared session cookie (`/auth/*`), EN/RU, one black-and-white theme (Mono Brutal) and a three.js logo intro. Stack: Next.js 16.4 (App Router, `output: 'standalone'`, React Compiler, typed routes), React 19.3, TypeScript 7 (strict), Node 26, pnpm 12, next-intl 4 (EN/RU, no locale in the URL), Zod 4, Tailwind 4, shadcn/ui through `@nick-lukashik/ui`, three.js (the logo), Pino, Biome, Vitest 5, Playwright 1.64 + axe. No database and no `/api` proxy of its own; with accounts on, `src/proxy.ts` and `src/lib/session/` call id-api from the server.
 
 ## Library rules
 
@@ -38,7 +38,7 @@ Read a library's file before working with it. The first line of each file names 
 - `src/lib/env/`: env through Zod, `server.ts` (server only, read at startup). No `NEXT_PUBLIC_*`: one image runs on stage and prod, so nothing environment-specific is inlined at build time (`ROBOTS` is runtime env too).
 - `src/lib/security/`: CSP and static headers. `src/lib/seo/`: alternates, robots, Open Graph.
 - `src/i18n/`: locales, locale resolution, next-intl config, catalogs `messages/{en,ru}.json`.
-- `src/components/ui/`: shadcn/ui components (source, owned here, restyled). `src/components/`: header, footer, language switch, page blocks.
+- UI components come from `@nick-lukashik/ui` (the Mono Brutal kit, repository `packages`), one import per file. `src/components/`: header, footer, language switch, page blocks.
 - `e2e/`: Playwright; `servers.ts` holds the test servers' ports.
 
 ## Conventions
@@ -46,7 +46,7 @@ Read a library's file before working with it. The first line of each file names 
 - A backend is added only when a page needs its data, by copying the API capability from `next-example` with its tests; never a stub "for later". Its rules (`/api` on the same origin only, the header allow-list, `docs/auth.md`) come with it.
 - A page exports only `title` and `description` through `generateMetadata` + `getTranslations`; the root layout sets canonical, hreflang and `og:url`.
 - All text lives in `src/i18n/messages/en.json` and `ru.json` with the same keys (a unit test checks it). Write Russian copy by hand, not machine-translated.
-- UI comes from shadcn/ui (`pnpm exec shadcn add <name>`), see `.claude/rules/shadcn.md`. One theme, black and white (Mono Brutal): colours are tokens from `src/app/globals.css`, no `dark:` classes (a unit test checks it), AA contrast. Motion (intro, roulette, floating letters, scroll reveal) stops with `prefers-reduced-motion`; e2e runs with it on, `e2e/motion.spec.ts` without. No server-rendered `style={...}`: the CSP blocks inline styles.
+- UI comes from `@nick-lukashik/ui` (shadcn/ui restyled; a missing component is added to the kit), see `.claude/rules/shadcn.md`. One theme, black and white (Mono Brutal): colours are the kit's tokens, fonts come through next/font (`src/app/fonts.ts`), no `dark:` classes (a unit test checks it), AA contrast. Motion (intro, roulette, floating letters, scroll reveal) stops with `prefers-reduced-motion`; e2e runs with it on, `e2e/motion.spec.ts` without. No server-rendered `style={...}`: the CSP blocks inline styles.
 - Server modules start with `import 'server-only'`. Read `process.env` only in `src/lib/env/` (plus `APP_VERSION`/`NODE_ENV` in the proxy and instrumentation).
 - English everywhere (code, comments, docs, tests) except the product copy in `ru.json`. Comments are short and to the point.
 - Code style is Biome's (`biome.json`): 4-space indent, single quotes (double in JSX), no semicolons, trailing commas, `type` over `interface`, inline `type` imports, `T[]` arrays, kebab-case file names. Run `pnpm format`.

@@ -1,190 +1,59 @@
-@import "tailwindcss";
+@import "tailwindcss" source(none);
 @import "tw-animate-css";
-@import "shadcn/tailwind.css";
-
+@import "@nick-lukashik/ui/styles.css";
 /*
- * One theme, Mono Brutal: black and white, square corners, 1px lines,
- * condensed caps for headings and a monospace for everything else. The tokens
- * keep the shadcn/ui names, so components use them as before (bg-background,
- * text-muted-foreground, border-border, ...). Text on black passes WCAG AA;
- * axe checks it in e2e.
+ * Tailwind makes CSS for the classes it finds in these files: this site's
+ * src/ and only the kit's files it renders. Automatic detection is off: with
+ * it, a file inside node_modules pulls in its whole folder (every kit component).
  */
+@source "..";
+@source "../../node_modules/@nick-lukashik/ui/dist/{components/{button,filter-list,section},brand/*,motion/roulette}.js";
+
+/*
+ * Mono Brutal comes from @nick-lukashik/ui: tokens, fonts, the Tailwind theme
+ * and the shared utilities (wrap, display, label, live-dot, ticker-track,
+ * flow, reveal, float-letter, the roulette). What is left here is the
+ * landing's own: the fonts through next/font (src/app/fonts.ts) and the logo intro.
+ */
+
 :root {
-    color-scheme: dark;
-    --radius: 0rem;
-    --background: #000000;
-    --foreground: #ffffff;
-    --card: #000000;
-    --card-foreground: #ffffff;
-    --popover: #000000;
-    --popover-foreground: #ffffff;
-    --primary: #ffffff;
-    --primary-foreground: #000000;
-    --secondary: #121212;
-    --secondary-foreground: #ffffff;
-    --muted: #121212;
-    /* 8.6:1 on black. */
-    --muted-foreground: #a3a3a3;
-    /* Body copy on black, a step below white. */
-    --soft: #d6d6d6;
-    --accent: #ffffff;
-    --accent-foreground: #000000;
-    --destructive: #ff6b6b;
-    /* Strong lines are white, quiet ones a translucent white. */
-    --border: #ffffff;
-    --line: rgb(255 255 255 / 0.28);
-    --input: #ffffff;
-    --ring: #b9ff3d;
-    /* The one colour: the "live" dot, the roulette marker, list arrows. */
-    --signal: #b9ff3d;
-}
-
-@theme inline {
-    --color-background: var(--background);
-    --color-foreground: var(--foreground);
-    --color-card: var(--card);
-    --color-card-foreground: var(--card-foreground);
-    --color-popover: var(--popover);
-    --color-popover-foreground: var(--popover-foreground);
-    --color-primary: var(--primary);
-    --color-primary-foreground: var(--primary-foreground);
-    --color-secondary: var(--secondary);
-    --color-secondary-foreground: var(--secondary-foreground);
-    --color-muted: var(--muted);
-    --color-muted-foreground: var(--muted-foreground);
-    --color-accent: var(--accent);
-    --color-accent-foreground: var(--accent-foreground);
-    --color-destructive: var(--destructive);
-    --color-border: var(--border);
-    --color-line: var(--line);
-    --color-input: var(--input);
-    --color-ring: var(--ring);
-    --color-signal: var(--signal);
-    --color-soft: var(--soft);
-    --radius-sm: 0rem;
-    --radius-md: 0rem;
-    --radius-lg: 0rem;
-    --radius-xl: 0rem;
-    --radius-2xl: 0rem;
-    --radius-3xl: 0rem;
-    --radius-4xl: 0rem;
-    /* Self-hosted (@fontsource, imported in the root layout), Latin and Cyrillic. */
-    --font-sans: "Martian Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    --font-heading: "Sofia Sans Extra Condensed", "Arial Narrow", sans-serif;
-    --font-display: "Sofia Sans Extra Condensed", "Arial Narrow", sans-serif;
-    --font-mono: "Martian Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-}
-
-@layer base {
-    * {
-        @apply border-border outline-ring/50;
-    }
-    html {
-        -webkit-text-size-adjust: 100%;
-        scroll-padding-top: 4rem;
-        @apply bg-background font-sans;
-    }
-    body {
-        @apply bg-background text-sm/relaxed text-foreground antialiased;
-        overflow-x: hidden;
-    }
-    ::selection {
-        @apply bg-foreground text-background;
-    }
-    /* Plain links and other elements without their own focus style. */
-    :focus-visible {
-        @apply outline-2 outline-offset-2 outline-ring;
-    }
-}
-
-/* Page width and side padding. */
-@utility wrap {
-    @apply mx-auto w-full max-w-[1240px] px-5 sm:px-8;
-}
-
-/* Big condensed caps. */
-@utility display {
-    @apply font-display leading-[0.95] font-extrabold tracking-[0.005em] uppercase;
-}
-
-/* Small monospace caps: labels, breadcrumbs, meta lines. */
-@utility label {
-    @apply font-mono text-xs font-medium tracking-[0.14em] uppercase;
-}
-
-/* The green "live" dot. */
-@utility live-dot {
-    @apply inline-block size-2 shrink-0 rounded-full bg-signal motion-safe:animate-[live-pulse_2.4s_ease-in-out_infinite];
-}
-
-@keyframes live-pulse {
-    50% {
-        opacity: 0.45;
-    }
-}
-
-/* The running line under the hero. */
-@utility ticker-track {
-    @apply motion-safe:animate-[ticker_40s_linear_infinite];
-}
-
-@keyframes ticker {
-    to {
-        transform: translateX(-50%);
-    }
-}
-
-/* Dashes that run along the lines of the architecture diagram. */
-@utility flow {
-    stroke-dasharray: 4 6;
-    @apply motion-safe:animate-[flow_1.2s_linear_infinite];
-}
-
-@keyframes flow {
-    to {
-        stroke-dashoffset: -20;
-    }
-}
-
-/* Sections slide in as they scroll into view, where the browser can tie an animation to scrolling. */
-@utility reveal {
-    @supports (animation-timeline: view()) {
-        @media (prefers-reduced-motion: no-preference) {
-            animation: reveal linear both;
-            animation-timeline: view();
-            animation-range: entry 0% entry 35%;
-        }
-    }
-}
-
-@keyframes reveal {
-    from {
-        opacity: 0;
-        transform: translateY(18px);
-    }
-}
-
-/* The letters of the hero wordmark float one by one (src/components/wordmark). */
-@utility float-letter {
-    transform-box: fill-box;
-    transform-origin: 50% 50%;
-    will-change: transform;
+    --font-sans: var(--font-mono-latin), var(--font-mono-cyrillic), ui-monospace, monospace;
+    --font-display: var(--font-condensed-latin), var(--font-condensed-cyrillic), "Arial Narrow", sans-serif;
 }
 
 /*
- * The intro (src/components/nl): while it plays, the page underneath stays
- * hidden; it shows once the intro is gone, at once without JavaScript or
- * with reduced motion.
+ * The intro (src/components/nl): while it plays, the logo's canvas comes up
+ * over the page on a black ground, and the page shows from under it once the
+ * intro is gone. The page itself is painted (and loaded) from the start, only
+ * covered: browsers count that as the first paint, unlike a page at opacity 0.
+ * Without JavaScript or with reduced motion there is no cover.
  */
 @media (prefers-reduced-motion: no-preference) {
-    body:has(#intro:not([data-state="gone"])) :is(.site, .consent) {
+    .intro-host {
+        transition: background-color 0.6s ease;
+    }
+    #intro:not([data-state="gone"]) ~ .intro-host {
+        z-index: 79;
+        background-color: var(--background);
+    }
+    #intro:not([data-state="gone"]) ~ .consent {
         opacity: 0;
         pointer-events: none;
     }
+    #intro[data-state="gone"] ~ .site {
+        animation: site-in 0.6s ease both;
+    }
 }
 
-.site {
-    @apply motion-safe:transition-opacity motion-safe:duration-600;
+/* No logo on this device (no GPU): nothing to replay. */
+.intro-host[data-logo="off"] ~ .site .replay-intro {
+    display: none;
+}
+
+@keyframes site-in {
+    from {
+        opacity: 0;
+    }
 }
 
 #intro {
@@ -217,34 +86,6 @@
 
 #intro[data-state="named"] .intro-boot {
     opacity: 1;
-}
-
-/* The roulette between pages (src/components/route-roulette.tsx). */
-.roulette[data-state="out"] {
-    transform: translateY(-100%);
-    transition: transform 0.55s cubic-bezier(0.75, 0, 0.2, 1);
-}
-
-.roulette-rail {
-    mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
-}
-
-.roulette-marker::before,
-.roulette-marker::after {
-    content: "";
-    position: absolute;
-    left: -7px;
-    border: 8px solid transparent;
-}
-
-.roulette-marker::before {
-    top: 0;
-    border-top-color: var(--signal);
-}
-
-.roulette-marker::after {
-    bottom: 0;
-    border-bottom-color: var(--signal);
 }
 
 @media (prefers-reduced-motion: reduce) {

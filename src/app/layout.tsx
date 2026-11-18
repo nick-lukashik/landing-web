@@ -1,16 +1,11 @@
+import { type RoulettePage, RouteRoulette } from '@nick-lukashik/ui/next'
 import { type Metadata, type Viewport } from 'next'
 import { cookies, headers } from 'next/headers'
 import { NextIntlClientProvider } from 'next-intl'
-import { getLocale, getTranslations } from 'next-intl/server'
-import '@fontsource/martian-mono/400.css'
-import '@fontsource/martian-mono/500.css'
-import '@fontsource/martian-mono/700.css'
-import '@fontsource/sofia-sans-extra-condensed/700.css'
-import '@fontsource/sofia-sans-extra-condensed/800.css'
+import { getLocale, getMessages, getTranslations } from 'next-intl/server'
 import { AnalyticsConsent } from '@/components/analytics-consent'
 import { JsonLd } from '@/components/json-ld'
 import { NlStage } from '@/components/nl/nl-stage'
-import { type RoulettePage, RouteRoulette } from '@/components/route-roulette'
 import { SiteFooter } from '@/components/site-footer'
 import { SiteHeader } from '@/components/site-header'
 import { type AppLocale, defaultLocale, isLocale, locales } from '@/i18n/config'
@@ -22,6 +17,7 @@ import { NONCE_HEADER } from '@/lib/security/csp'
 import { CANONICAL_HEADER, languageAlternates, localizedPath, PATHNAME_HEADER } from '@/lib/seo/alternates'
 import { baseOpenGraph } from '@/lib/seo/metadata'
 import { ACCOUNT_HEADER, accountFromHeader, accounts } from '@/lib/session/session'
+import { fontVariables } from './fonts'
 import './globals.css'
 
 /**
@@ -133,12 +129,13 @@ async function roulettePages(): Promise<RoulettePage[]> {
 }
 
 export default async function RootLayout({ children }: LayoutProps<'/'>) {
-    const [locale, requestHeaders, t, names, pages] = await Promise.all([
+    const [locale, requestHeaders, t, names, pages, messages] = await Promise.all([
         getLocale(),
         headers(),
         getTranslations(),
         languageNames(),
         roulettePages(),
+        getMessages(),
     ])
     const nonce = requestHeaders.get(NONCE_HEADER) ?? undefined
     const site = serverEnv.SITE_URL
@@ -146,14 +143,26 @@ export default async function RootLayout({ children }: LayoutProps<'/'>) {
     const account = accounts ? accountFromHeader(requestHeaders.get(ACCOUNT_HEADER)) : undefined
 
     return (
-        <html lang={locale}>
+        <html
+            lang={locale}
+            className={fontVariables}
+        >
             <body>
-                <NextIntlClientProvider>
+                <NextIntlClientProvider
+                    // Only what client components translate: the rest stays on the server, out of every page's payload.
+                    messages={{
+                        nav: messages.nav,
+                        meta: messages.meta,
+                        intro: messages.intro,
+                        consent: messages.consent,
+                        error: messages.error,
+                    }}
+                >
                     {/* The intro plays when the first page of a visit is the home page. */}
                     <NlStage intro={(requestHeaders.get(PATHNAME_HEADER) ?? '/') === '/'} />
                     <noscript>
                         {/* Without JavaScript the intro cannot play: no overlay, the page at once. */}
-                        <style nonce={nonce}>{'#intro{display:none}.site{opacity:1!important}'}</style>
+                        <style nonce={nonce}>{'#intro,.intro-host{display:none}'}</style>
                     </noscript>
                     <div className="site relative z-[2] flex min-h-dvh flex-col">
                         <a
@@ -176,7 +185,15 @@ export default async function RootLayout({ children }: LayoutProps<'/'>) {
                         </main>
                         <SiteFooter />
                     </div>
-                    <RouteRoulette pages={pages} />
+                    <RouteRoulette
+                        pages={pages}
+                        labels={{
+                            // Raw: the roulette puts the page's name into {name} itself.
+                            opening: t.raw('roulette.opening'),
+                            site: t('roulette.site'),
+                            page: t('roulette.pageHint'),
+                        }}
+                    />
                     {serverEnv.GTM_ID ? (
                         <AnalyticsConsent
                             id={serverEnv.GTM_ID}

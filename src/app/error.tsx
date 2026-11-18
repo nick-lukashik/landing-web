@@ -1,8 +1,8 @@
 'use client'
 
+import { Button } from '@nick-lukashik/ui/button'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { Button } from '@/components/ui/button'
 
 type ErrorProps = {
     error: unknown

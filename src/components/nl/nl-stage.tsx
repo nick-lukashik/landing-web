@@ -1,9 +1,9 @@
 'use client'
 
+import { Wordmark } from '@nick-lukashik/ui/brand/wordmark'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useEffect, useEffectEvent, useRef, useState } from 'react'
-import { Wordmark } from '@/components/wordmark/wordmark'
 import { type Scene } from './scene'
 
 /** The hero's "Replay intro" button sends this on window. */
@@ -28,6 +28,8 @@ export function NlStage({ intro }: { intro: boolean }) {
     const host = useRef<HTMLDivElement>(null)
     const scene = useRef<Scene | null>(null)
     const [state, setState] = useState<IntroState | null>(intro ? 'playing' : null)
+    const [mounted, setMounted] = useState(false)
+    useEffect(() => setMounted(true), [])
 
     const finish = useEffectEvent(() => {
         played = true
@@ -40,28 +42,41 @@ export function NlStage({ intro }: { intro: boolean }) {
         const element = host.current
         const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
         let cancelled = false
-        // Never keep the page hidden: if the logo has not started in time, show the page anyway.
-        const safety = setTimeout(finish, 6000)
-        import('./scene')
-            .then(({ createScene }) => {
-                if (cancelled) return
-                scene.current = createScene(element, {
-                    reduce,
-                    skipIntro: played || !intro,
-                    onNamed: () => setState(current => (current === 'playing' ? 'named' : current)),
-                    onFinish: () => {
-                        clearTimeout(safety)
-                        finish()
-                    },
-                })
-            })
-            .catch(() => {
-                // No WebGL or the chunk failed: the page goes on without the logo.
-                clearTimeout(safety)
+        let safety: ReturnType<typeof setTimeout> | undefined
+        // Its own task after hydration: probing WebGL and loading three.js
+        // stay out of the page's first long task.
+        const start = setTimeout(() => {
+            // Without a GPU (software WebGL) the liquid logo takes the CPU for
+            // seconds and freezes the page: go on without it.
+            if (!hardwareWebGl()) {
+                element.dataset.logo = 'off'
                 finish()
-            })
+                return
+            }
+            // Never keep the page hidden: if the logo has not started in time, show the page anyway.
+            safety = setTimeout(finish, 6000)
+            import('./scene')
+                .then(({ createScene }) => {
+                    if (cancelled) return
+                    scene.current = createScene(element, {
+                        reduce,
+                        skipIntro: played || !intro,
+                        onNamed: () => setState(current => (current === 'playing' ? 'named' : current)),
+                        onFinish: () => {
+                            clearTimeout(safety)
+                            finish()
+                        },
+                    })
+                })
+                .catch(() => {
+                    // No WebGL or the chunk failed: the page goes on without the logo.
+                    clearTimeout(safety)
+                    finish()
+                })
+        }, 0)
         return () => {
             cancelled = true
+            clearTimeout(start)
             clearTimeout(safety)
         }
     }, [
@@ -118,11 +133,7 @@ export function NlStage({ intro }: { intro: boolean }) {
 
     return (
         <>
-            <div
-                ref={host}
-                aria-hidden="true"
-                className="pointer-events-none fixed inset-0 z-0"
-            />
+            {/* The intro comes first: the CSS reaches the canvas and the page after it with ~. */}
             {state ? (
                 <div
                     id="intro"
@@ -130,11 +141,36 @@ export function NlStage({ intro }: { intro: boolean }) {
                     className="fixed inset-0 z-[80] grid place-items-end justify-center bg-[radial-gradient(ellipse_at_50%_45%,transparent_0%,rgb(0_0_0/0.55)_70%,#000_100%)] pb-[7vh]"
                 >
                     <div aria-hidden="true">
-                        <Wordmark className="intro-name mx-auto block h-auto w-[min(300px,56vw)] text-foreground" />
+                        {/* 28 KB of path: drawn in the browser, not sent in the HTML of every first visit. */}
+                        {mounted ? (
+                            <Wordmark className="intro-name mx-auto block h-auto w-[min(300px,56vw)] text-foreground" />
+                        ) : null}
                         <p className="intro-boot label mt-4 text-center text-muted-foreground">{t('booting')}</p>
                     </div>
                 </div>
             ) : null}
+            <div
+                ref={host}
+                aria-hidden="true"
+                className="intro-host pointer-events-none fixed inset-0 z-0"
+            />
         </>
     )
+}
+
+/**
+ * Whether WebGL 2 runs on a GPU. A browser may refuse a context with a major
+ * performance caveat when it would emulate one; Chrome does not always, so
+ * the renderer's name is checked too (SwiftShader, llvmpipe and the like draw
+ * on the CPU).
+ */
+function hardwareWebGl() {
+    const gl = document.createElement('canvas').getContext('webgl2', {
+        failIfMajorPerformanceCaveat: true,
+    })
+    if (!gl) return false
+    const info = gl.getExtension('WEBGL_debug_renderer_info')
+    const renderer = String(gl.getParameter(info ? info.UNMASKED_RENDERER_WEBGL : gl.RENDERER))
+    gl.getExtension('WEBGL_lose_context')?.loseContext()
+    return !/swiftshader|llvmpipe|softpipe|software|basic render/i.test(renderer)
 }
