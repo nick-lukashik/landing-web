@@ -176,8 +176,8 @@ importers:
         specifier: 5.3.0
         version: 5.3.0
       '@nick-lukashik/ui':
-        specifier: 0.3.1-dev.1
-        version: 0.3.1-dev.1(@date-fns/tz@1.5.0)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(date-fns@4.4.0)(next@16.4.3(@babel/core@7.29.7)(@playwright/test@1.64.1)(@types/node@26.6.6)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react-is@19.3.1)(react@19.3.1)(redux@5.0.1)
+        specifier: 0.3.1
+        version: 0.3.1(@date-fns/tz@1.5.0)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(date-fns@4.4.0)(next@16.4.3(@babel/core@7.29.7)(@playwright/test@1.64.1)(@types/node@26.6.6)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react-is@19.3.1)(react@19.3.1)(redux@5.0.1)
       class-variance-authority:
         specifier: 0.7.1
         version: 0.7.1
@@ -803,8 +803,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@nick-lukashik/ui@0.3.1-dev.1':
-    resolution: {integrity: sha512-UhcIL5jXAhMnJV87yGYGHbcKRBQggxsd61PlWhDVKee/CoMMozxRNOfob6aN4g6k+GVngbTOPr91sK+7XceDPQ==}
+  '@nick-lukashik/ui@0.3.1':
+    resolution: {integrity: sha512-sGfGfyYO9G2u2sEpdlbMJVkG0IaS3PqDiEuKmy6Co15ij4HcBzYpPJdWAzARWkdS2hyR7d9vWT+g9X6KmqbSgA==}
     peerDependencies:
       next: '>=16.0.0'
       react: ^19.0.0
@@ -4280,7 +4280,7 @@ snapshots:
   '@next/swc-win32-x64-msvc@16.4.3':
     optional: true
 
-  '@nick-lukashik/ui@0.3.1-dev.1(@date-fns/tz@1.5.0)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(date-fns@4.4.0)(next@16.4.3(@babel/core@7.29.7)(@playwright/test@1.64.1)(@types/node@26.6.6)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react-is@19.3.1)(react@19.3.1)(redux@5.0.1)':
+  '@nick-lukashik/ui@0.3.1(@date-fns/tz@1.5.0)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(date-fns@4.4.0)(next@16.4.3(@babel/core@7.29.7)(@playwright/test@1.64.1)(@types/node@26.6.6)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react-is@19.3.1)(react@19.3.1)(redux@5.0.1)':
     dependencies:
       '@base-ui/react': 1.9.0(@date-fns/tz@1.5.0)(@types/react@19.3.0)(date-fns@4.4.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@fontsource/martian-mono': 5.3.0
