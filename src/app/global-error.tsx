@@ -1,7 +1,7 @@
 'use client'
 
+import { Button } from '@nick-lukashik/ui/button'
 import { useSyncExternalStore } from 'react'
-import { Button } from '@/components/ui/button'
 import { type AppLocale, defaultLocale, isLocale, LOCALE_COOKIE } from '@/i18n/config'
 import en from '@/i18n/messages/en.json'
 import ru from '@/i18n/messages/ru.json'

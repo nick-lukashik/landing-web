@@ -1,12 +1,12 @@
 'use client'
 
+import { Button } from '@nick-lukashik/ui/button'
 import { type Route } from 'next'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { LineIcon } from '@/components/icons'
-import { Button } from '@/components/ui/button'
 import { type AppLocale } from '@/i18n/config'
 import { CALL_URL } from '@/lib/content'
 import { type Account } from '@/lib/session/session'

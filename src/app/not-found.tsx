@@ -1,7 +1,7 @@
+import { Button } from '@nick-lukashik/ui/button'
 import { type Metadata } from 'next'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
-import { Button } from '@/components/ui/button'
 
 export async function generateMetadata(): Promise<Metadata> {
     const t = await getTranslations('notFound')

@@ -1,10 +1,11 @@
+import { Button } from '@nick-lukashik/ui/button'
+import { PageHead } from '@nick-lukashik/ui/section'
 import { type Metadata, type Route } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
-import { crumbLink, PageHead } from '@/components/blocks'
+import { crumbLink } from '@/components/blocks'
 import { BrandIcon } from '@/components/icons'
-import { Button } from '@/components/ui/button'
 import { findPart, PARTS } from '@/lib/content'
 
 export async function generateMetadata({ params }: PageProps<'/platform/[part]'>): Promise<Metadata> {

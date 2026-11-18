@@ -1,40 +1,10 @@
 import { type Route } from 'next'
 import Link from 'next/link'
 import { getFormatter, getTranslations } from 'next-intl/server'
-import { type ReactNode } from 'react'
 import { BrandIcon } from '@/components/icons'
 import { contacts } from '@/lib/contacts'
 import { type POSTS } from '@/lib/content'
 import { cn } from '@/lib/utils'
-
-/** A section's opening: label and big title on the left, a short intro on the right. */
-export function SectionHead({ id, label, title, intro }: { id: string; label: string; title: string; intro: string }) {
-    return (
-        <div className="reveal mb-14 grid items-end gap-10 min-[980px]:grid-cols-2">
-            <div>
-                <p className="label mb-4 text-muted-foreground">{label}</p>
-                <h2
-                    id={id}
-                    className="display text-[clamp(44px,5.6vw,88px)]"
-                >
-                    {title}
-                </h2>
-            </div>
-            <p className="max-w-[520px] text-base text-soft">{intro}</p>
-        </div>
-    )
-}
-
-/** A page of its own: breadcrumb, title, intro. */
-export function PageHead({ crumbs, title, intro }: { crumbs: ReactNode; title: string; intro?: string }) {
-    return (
-        <>
-            <p className="label mb-6 text-muted-foreground">{crumbs}</p>
-            <h1 className="display mb-5 max-w-[1000px] text-[clamp(44px,6vw,96px)]">{title}</h1>
-            {intro ? <p className="mb-12 max-w-[760px] text-base text-soft">{intro}</p> : null}
-        </>
-    )
-}
 
 export const crumbLink = 'hover:text-foreground'
 

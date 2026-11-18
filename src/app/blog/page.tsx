@@ -1,8 +1,9 @@
+import { FilterList } from '@nick-lukashik/ui/filter-list'
+import { PageHead } from '@nick-lukashik/ui/section'
 import { type Metadata } from 'next'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
-import { crumbLink, PageHead, PostRow } from '@/components/blocks'
-import { FilterList } from '@/components/filter-list'
+import { crumbLink, PostRow } from '@/components/blocks'
 import { POSTS, type TagId } from '@/lib/content'
 
 export async function generateMetadata(): Promise<Metadata> {
