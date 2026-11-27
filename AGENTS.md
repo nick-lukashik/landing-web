@@ -10,7 +10,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # landing-web: rules for agents
 
-The site on nick-lukashik.com, made from `next-starter`: a job-search landing (the main page, `/platform/*`, `/blog`, `/blog/*`, `/tools`), `/privacy`, `/terms` and the account of the shared session cookie (`/auth/*`), EN/RU, one black-and-white theme (Mono Brutal) and a three.js logo intro. Stack: Next.js 16.4 (App Router, `output: 'standalone'`, React Compiler, typed routes), React 19.3, TypeScript 7 (strict), Node 26, pnpm 12, next-intl 4 (EN/RU, no locale in the URL), Zod 4, Tailwind 4, shadcn/ui through `@nick-lukashik/ui`, three.js (the logo), Pino, Biome, Vitest 5, Playwright 1.64 + axe. No database and no `/api` proxy of its own; with accounts on, `src/proxy.ts` and `src/lib/session/` call id-api from the server.
+The site on nick-lukashik.com, made from `next-starter`: a job-search landing (the main page, `/platform/*`, `/blog`, `/blog/*`, `/tools`), `/privacy`, `/terms` and the account of the shared session cookie (`/auth/*`), EN/RU, one black-and-white theme (Mono Brutal) and a three.js logo intro. Stack: Next.js 16.4 (App Router, `output: 'standalone'`, React Compiler, typed routes), React 19.3, TypeScript 7 (strict), Node 26, pnpm 12, next-intl 4 (EN/RU, no locale in the URL), Zod 4, Tailwind 4, shadcn/ui through `@nick-lukashik/ui`, three.js (the logo), Pino, Biome, Vitest 5, Playwright 1.65 + axe. No database and no `/api` proxy of its own; with accounts on, `src/proxy.ts` and `src/lib/session/` call id-api from the server.
 
 ## Library rules
 
